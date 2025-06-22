@@ -51,6 +51,11 @@ class MainPage:
             f'//td[@id="enhanced-table-checkbox-{spend_id}"]/ancestor::tr//button[@aria-label="Edit spending"]'
         )
         edit_button.click()
+        WebDriverWait(self.__driver, 2).until(
+            EC.visibility_of_element_located((
+                By.ID, 'amount'
+            ))
+        )
 
     def click_delete_spend(self) -> None:
         self.__driver.find_element(By.ID, 'delete').click()
@@ -82,9 +87,6 @@ class MainPage:
         date_obj = datetime.strptime(spend_date,  "%m/%d/%Y")
         formatted_date = date_obj.strftime("%b %d, %Y")
 
-        # local_dt = datetime.fromisoformat(str(date_obj)).astimezone(tz.tzlocal())
-        # formatted_date = local_dt.strftime("%b %d, %Y")
-
         currency_symbols = {
             "RUB": "₽",
             "USD": "$",
@@ -106,8 +108,8 @@ class MainPage:
                 if (
                     category_name in row_text and
                    amount_with_symbol in row_text and
-                    (description in row_text or not description)
-                    # formatted_date in row_text
+                    (description in row_text or not description) and
+                    formatted_date in row_text
                 ):
                     return True
 

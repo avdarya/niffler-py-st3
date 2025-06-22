@@ -3,15 +3,15 @@
 ### Шаги
 1. Склонировать проект
 ```bash
-   git clone https:    /python-advanced-intro-4.git
+   git clone https://github.com/avdarya/niffler-py-st3.git
 ```
-2. Установить зависимости
+3. Перейти в корневой каталог проекта
 ```bash
-    pip install -r requirements.txt
+  cd niffler-py-st3
 ```
-3. Запустить микросервис "Запуск Niffler в докере":
+4. Запустить микросервис
 ```bash
-bash docker-compose-dev.sh
+  docker-compose-dev.sh
 ```
 4. Запустить тесты:
 ```bash

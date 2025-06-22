@@ -19,7 +19,8 @@ class SpendingPage:
         self.__driver.find_element(By.CSS_SELECTOR, 'input[name="amount"]').send_keys(amount)
 
     def get_amount_input(self) -> str:
-        return self.__driver.find_element(By.CSS_SELECTOR, 'input[name="amount"]').text
+        amount_input = self.__driver.find_element(By.CSS_SELECTOR, 'input[name="amount"]')
+        return amount_input.get_attribute('value')
 
     def helper_text_amount_input(self) -> str:
         amount_div = self.__driver.find_element(By.XPATH, './/input[@id="amount"]/parent::div')
@@ -30,7 +31,8 @@ class SpendingPage:
         self.__driver.find_element(By.CSS_SELECTOR, 'input[name="description"]').send_keys(description)
 
     def get_description_input(self) -> str:
-        return self.__driver.find_element(By.CSS_SELECTOR, 'input[name="description"]').text
+        description_input = self.__driver.find_element(By.CSS_SELECTOR, 'input[name="description"]')
+        return description_input.get_attribute('value')
 
     def clear_description_input(self) -> None:
         self.__driver.find_element(By.CSS_SELECTOR, 'input[name="description"]').clear()
@@ -42,9 +44,6 @@ class SpendingPage:
     def get_date_input(self) -> str:
         date_input = self.__driver.find_element(By.CSS_SELECTOR, 'input[name="date"]')
         date_value = date_input.get_attribute('value')
-        # date_obj = datetime.strptime(date_value, '%m/%d/%Y')
-        # formatted_data = date_obj.strftime("%Y-%m-%d")
-        # return formatted_data
         return date_value
 
     def clear_date_input(self) -> None:
