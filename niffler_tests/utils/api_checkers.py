@@ -1,5 +1,7 @@
 import time
-from clients.spend_client import SpendApiClient
+
+from niffler_tests.clients.spend_client import SpendApiClient
+
 
 def assert_spend_record_exists(
         api_response: list,

@@ -1,28 +1,11 @@
 import time
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.remote.webdriver import WebDriver
-from selenium.webdriver.support.wait import WebDriverWait
-
-from clients.categories_client import CategoriesApiClient
-
-
-def login(driver: WebDriver, login_url: str, username: str, password: str) -> WebDriver:
-    driver.get(f"{login_url}/login")
-
-    driver.find_element(By.CSS_SELECTOR, 'input[name="username"]').send_keys(username)
-    driver.find_element(By.CSS_SELECTOR, 'input[name="password"]').send_keys(password)
-
-    driver.find_element(By.CSS_SELECTOR, 'button[type="submit"]').click()
-
-    WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.CSS_SELECTOR, 'img[alt="Niffler logo"]'))
-    )
-
-    return driver
+from datetime import datetime
+from selenium.webdriver.remote.webelement import WebElement
+from niffler_tests.clients.category_client import CategoryApiClient
+from niffler_tests.web_pages.MainPage import MainPage
 
 def wait_for_category_update_name(
-        categories_client: CategoriesApiClient,
+        categories_client: CategoryApiClient,
         category_id: str,
         expected_name: str,
         timeout=5,
@@ -43,7 +26,7 @@ def wait_for_category_update_name(
     raise AssertionError(f"Категория {category_id} не обновилась на '{expected_name}' за {timeout} секунд")
 
 def wait_for_category_update_archive(
-        categories_client: CategoriesApiClient,
+        categories_client: CategoryApiClient,
         category_id: str,
         expected_archive: bool,
         timeout=5,
@@ -62,3 +45,41 @@ def wait_for_category_update_archive(
         time.sleep(interval)
 
     raise AssertionError(f"Категория {category_id} не обновилась на '{expected_archive}' за {timeout} секунд")
+
+def is_text_match_spend_row(
+        spend_row_text: str,
+        category_name: str,
+        amount: str,
+        currency: str,
+        description: str | None,
+        spend_date: str
+) -> bool:
+    date_obj = datetime.strptime(spend_date,  "%m/%d/%Y")
+    formatted_date = date_obj.strftime("%b %d, %Y")
+
+    currency_symbols = {
+        "RUB": "₽",
+        "USD": "$",
+        "EUR": "€",
+        "KZT": "₸",
+    }
+    amount_with_symbol = f"{amount} {currency_symbols.get(currency, '')}"
+
+    if (
+            category_name in spend_row_text and
+            amount_with_symbol in spend_row_text and
+            (description in spend_row_text or not description) and
+            formatted_date in spend_row_text
+    ):
+        return True
+    else:
+        return False
+
+def wait_for_spend_row(main_page: MainPage, spend_id: str, timeout=10, interval=0.5) -> WebElement:
+    end_time = time.time() + timeout
+    while time.time() < end_time:
+        spend_row = main_page.get_spend_row(spend_id)
+        if spend_row is not None:
+            return spend_row
+        time.sleep(interval)
+    raise AssertionError(f"Spend row with ID {spend_id} не появился в UI за {timeout} секунд")

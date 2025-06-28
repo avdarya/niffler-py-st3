@@ -1,23 +1,14 @@
-import os
-import dotenv
-from faker import Faker
-from selenium.webdriver.ie.webdriver import WebDriver
-from configuration.ConfigProvider import ConfigProvider
-from utils.helpers import login
-from web_pages.HeaderPage import HeaderPage
-from web_pages.SpendingPage import SpendingPage
+from niffler_tests.web_pages.HeaderPage import HeaderPage
+from niffler_tests.web_pages.MainPage import MainPage
+from niffler_tests.web_pages.SpendingPage import SpendingPage
 
-dotenv.load_dotenv()
-user_login = os.getenv("LOGIN")
-password = os.getenv("PASSWORD")
-
-fake = Faker()
-
-def test_add_empty_spend(browser: WebDriver, config: ConfigProvider, add_spending: dict):
-    auth_browser = login(driver=browser, login_url=config.get_ui_auth_url(), username=user_login, password=password)
-
-    spending_page = SpendingPage(driver=auth_browser)
-    header_page = HeaderPage(driver=auth_browser)
+def test_add_empty_spend(
+        main_page: MainPage,
+        header_page: HeaderPage,
+        spending_page: SpendingPage,
+        add_spend: dict
+):
+    main_page.open()
 
     header_page.click_new_spending()
 

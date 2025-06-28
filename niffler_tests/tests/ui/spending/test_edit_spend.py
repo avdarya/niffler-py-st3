@@ -4,17 +4,12 @@ from dateutil import tz
 import dotenv
 from datetime import datetime
 from faker import Faker
-from selenium.webdriver.ie.webdriver import WebDriver
-from clients.spend_client import SpendApiClient
-from configuration.ConfigProvider import ConfigProvider
-from tests.conftest import update_category
-from utils.helpers import login
-from web_pages.MainPage import MainPage
-from web_pages.SpendingPage import SpendingPage
-
-dotenv.load_dotenv()
-user_login = os.getenv("LOGIN")
-password = os.getenv("PASSWORD")
+from niffler_tests.clients.spend_client import SpendApiClient
+from niffler_tests.utils.api_checkers import assert_spend_record_exists
+from niffler_tests.utils.helpers import wait_for_spend_row, is_text_match_spend_row
+from niffler_tests.web_pages.HeaderPage import HeaderPage
+from niffler_tests.web_pages.MainPage import MainPage
+from niffler_tests.web_pages.SpendingPage import SpendingPage
 
 fake = Faker()
 
@@ -22,9 +17,10 @@ fake = Faker()
     ("456", "EUR", "02/09/2025", "spending for update")
 ])
 def test_edit_spend(
-        browser: WebDriver,
-        config: ConfigProvider,
-        add_spending: dict,
+        main_page: MainPage,
+        header_page: HeaderPage,
+        spending_page: SpendingPage,
+        add_spend: dict,
         update_category: dict,
         spend_client: SpendApiClient,
         amount: str,
@@ -32,13 +28,10 @@ def test_edit_spend(
         spend_date: str,
         description: str,
 ):
+    main_page.open()
 
-    auth_browser = login(driver=browser, login_url=config.get_ui_auth_url(), username=user_login, password=password)
-
-    main_page = MainPage(driver=auth_browser, config=config)
-    spending_page = SpendingPage(driver=auth_browser)
-
-    main_page.click_edit_spend(spend_id=add_spending["id"])
+    spend_row = main_page.get_spend_row(spend_id=add_spend["id"])
+    main_page.click_edit_spend(spend_row)
 
     spending_page.clear_amount_input()
     spending_page.enter_amount_input(amount=amount)
@@ -59,18 +52,12 @@ def test_edit_spend(
 
     alert_on_updated = main_page.alert_on_action()
 
-    is_found_updated_row = main_page.is_found_spend_row(
-        category_name=new_category,
-        amount=amount,
-        currency=currency,
-        description=description,
-        spend_date=spend_date,
-    )
+    spend_row = wait_for_spend_row(main_page=main_page, spend_id=add_spend["id"])
 
-    api_spend = spend_client.get_all_spends()
-    assert api_spend.status_code == 200
-    for spend in api_spend.json():
-        if spend["id"] == add_spending["id"]:
+    api_spending_resp = spend_client.get_all_spends()
+    assert api_spending_resp.status_code == 200
+    for spend in api_spending_resp.json():
+        if spend["id"] == add_spend["id"]:
             local_dt = datetime.fromisoformat(spend["spendDate"]).astimezone(tz.tzlocal())
             date_str = local_dt.strftime("%m/%d/%Y")
 
@@ -85,4 +72,11 @@ def test_edit_spend(
             assert spend["description"] == description
 
     assert "Spending is edited successfully" in alert_on_updated
-    assert is_found_updated_row
+    assert is_text_match_spend_row(
+        spend_row_text=spend_row.text,
+        category_name=new_category,
+        amount=amount,
+        currency=currency,
+        description=description,
+        spend_date=spend_date
+    )
