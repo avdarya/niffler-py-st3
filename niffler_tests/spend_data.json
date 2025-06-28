@@ -1,0 +1,110 @@
+[
+    {
+        "amount": 1724.96,
+        "description": "Deal people employee.",
+        "currency": "EUR",
+        "spendDate": "2025-06-07",
+        "category": {
+            "name": "category 1"
+        }
+    },
+    {
+        "amount": 2285.2,
+        "description": "Where matter that couple bit line.",
+        "currency": "RUB",
+        "spendDate": "2025-05-25",
+        "category": {
+            "name": "category 2"
+        }
+    },
+    {
+        "amount": 3360.75,
+        "description": "Area bad easy when right.",
+        "currency": "KZT",
+        "spendDate": "2025-06-25",
+        "category": {
+            "name": "category 2"
+        }
+    },
+    {
+        "amount": 207.65,
+        "description": "Method key media ready.",
+        "currency": "RUB",
+        "spendDate": "2025-06-05",
+        "category": {
+            "name": "category 2"
+        }
+    },
+    {
+        "amount": 2342.73,
+        "description": "Either music because according.",
+        "currency": "EUR",
+        "spendDate": "2025-05-02",
+        "category": {
+            "name": "category 1"
+        }
+    },
+    {
+        "amount": 1921.61,
+        "description": "But scene add set drop doctor fish today.",
+        "currency": "EUR",
+        "spendDate": "2025-06-08",
+        "category": {
+            "name": "category 2"
+        }
+    },
+    {
+        "amount": 3262.89,
+        "description": "Partner by pay meeting car.",
+        "currency": "EUR",
+        "spendDate": "2025-06-07",
+        "category": {
+            "name": "category 2"
+        }
+    },
+    {
+        "amount": 1596.11,
+        "description": "According along those take no stock.",
+        "currency": "USD",
+        "spendDate": "2025-05-16",
+        "category": {
+            "name": "category 1"
+        }
+    },
+    {
+        "amount": 333.95,
+        "description": "Catch indicate we data just. Meet reach its seat.",
+        "currency": "KZT",
+        "spendDate": "2025-06-03",
+        "category": {
+            "name": "category 1"
+        }
+    },
+    {
+        "amount": 3840.85,
+        "description": "Yeah tax car situation.",
+        "currency": "USD",
+        "spendDate": "2025-05-06",
+        "category": {
+            "name": "category 1"
+        }
+    },
+    {
+        "amount": 2684.57,
+        "description": "Really rule wife growth create large face play.",
+        "currency": "KZT",
+        "spendDate": "2025-05-13",
+        "category": {
+            "name": "category 2"
+        }
+    },
+    {
+        "amount": 3390.5,
+        "description": "Blue employee hit think drive.",
+        "currency": "EUR",
+        "spendDate": "2025-05-21",
+        "category": {
+            "name": "category 1"
+        }
+    }
+]
