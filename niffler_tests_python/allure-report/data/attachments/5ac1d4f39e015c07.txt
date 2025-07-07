@@ -1,0 +1,27 @@
+< GET /api/spends/all HTTP/1.1
+< Host: gateway.niffler.dc:8090
+< User-Agent: python-requests/2.32.4
+< Accept-Encoding: gzip, deflate
+< Accept: application/json
+< Connection: keep-alive
+< Authorization: Bearer eyJraWQiOiIyNWVlZTJjNC0wNjBiLTQxYmQtOGUyZC1kYTk5NGMzYWQxYmIiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJ0ZXN0MSIsImF1ZCI6ImNsaWVudCIsImF6cCI6ImNsaWVudCIsImF1dGhfdGltZSI6MTc1MTYzNTQ5MSwiaXNzIjoiaHR0cDovL2F1dGgubmlmZmxlci5kYzo5MDAwIiwiZXhwIjoxNzUxNjM3MjkxLCJpYXQiOjE3NTE2MzU0OTEsImp0aSI6IjRhZjg0N2YyLTAxOTAtNDlhNC1hMzQ1LTlmNmU4YzllOTMzZSIsInNpZCI6IkVsaG5Fd01SQUc0Ykd2X0szbmRGRm9OX1BkZDhCcmQxMm94VlNOQ1h5cUkifQ.JlDw4s4Tmw6X6u-ExLm6kQwLg3JsHvQOCldIrRPY4Yi9zR-0EtaszqcY81SSBUD9p-EmwmgCIOZQah8ltW_6LNe-clW62-J0uvdOVQwo_0iV6Y_P0d2FZKkdN6dsDVYYjGpUnkoqY6Eywyn3wus6rPZr7B2cud_ZsqL72RUDNOntkWucjIzaaMCrh6e4xLFHzp-9eXMDZF7P7UpbqEvF3xQhRDMrl45uXB7s-lbz23Me_jlKHjFYGZPR7JzSF3smXabJ8_Jck61_g80uPQfTF_nrK8Ix2gE66hgZb4FVSsBggmgh0nURSfXCxsTGJ-Syv7c1ukWtOgdJyROANfEaXA
+< Content-Type: application/json
+< 
+
+> HTTP/1.1 200 
+> Vary: Origin
+> Vary: Access-Control-Request-Method
+> Vary: Access-Control-Request-Headers
+> X-Content-Type-Options: nosniff
+> X-XSS-Protection: 0
+> Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+> Pragma: no-cache
+> Expires: 0
+> X-Frame-Options: DENY
+> Content-Type: application/json
+> Transfer-Encoding: chunked
+> Date: Fri, 04 Jul 2025 13:25:18 GMT
+> Keep-Alive: timeout=60
+> Connection: keep-alive
+> 
+[{"id":"4e9dcf92-24a1-469b-925f-a3200b47c120","spendDate":"2025-06-26T21:00:00.000+00:00","category":{"id":"411eaab6-9b27-46f3-885c-90a0c561fb45","name":"category for search category","username":"test1","archived":false},"currency":"RUB","amount":8989.05,"description":"test_search_spend_by_category","username":"test1"},{"id":"cc4b2dea-5c55-4c24-b323-b73e032f2607","spendDate":"2025-06-24T21:00:00.000+00:00","category":{"id":"31e0acf7-72e8-4c92-b0ff-8787b79b0948","name":"category 2","username":"test1","archived":false},"currency":"KZT","amount":3360.75,"description":"Area bad easy when right.","username":"test1"},{"id":"71738403-bd69-4d83-92b2-fca934eb08a4","spendDate":"2025-06-07T21:00:00.000+00:00","category":{"id":"31e0acf7-72e8-4c92-b0ff-8787b79b0948","name":"category 2","username":"test1","archived":false},"currency":"EUR","amount":1921.61,"description":"But scene add set drop doctor fish today.","username":"test1"},{"id":"6ecf493f-0cad-46ca-84b9-39a236cd3fd3","spendDate":"2025-06-06T21:00:00.000+00:00","category":{"id":"154532f6-4d7a-4c31-ba10-36fe796763d2","name":"category 1","username":"test1","archived":false},"currency":"EUR","amount":1724.96,"description":"Deal people employee.","username":"test1"},{"id":"77dc2d2c-283d-4772-9d73-04a7930ee102","spendDate":"2025-06-06T21:00:00.000+00:00","category":{"id":"31e0acf7-72e8-4c92-b0ff-8787b79b0948","name":"category 2","username":"test1","archived":false},"currency":"EUR","amount":3262.89,"description":"Partner by pay meeting car.","username":"test1"},{"id":"8cee43d2-6792-49fd-905f-1a97e4bb728a","spendDate":"2025-06-04T21:00:00.000+00:00","category":{"id":"31e0acf7-72e8-4c92-b0ff-8787b79b0948","name":"category 2","username":"test1","archived":false},"currency":"RUB","amount":207.65,"description":"Method key media ready.","username":"test1"},{"id":"b7529aae-16f7-4a90-b281-126703eca7d7","spendDate":"2025-06-02T21:00:00.000+00:00","category":{"id":"154532f6-4d7a-4c31-ba10-36fe796763d2","name":"category 1","username":"test1","archived":false},"currency":"KZT","amount":333.95,"description":"Catch indicate we data just. Meet reach its seat.","username":"test1"},{"id":"a3e2bf53-e995-415f-adf1-4f786d0ddae9","spendDate":"2025-05-24T21:00:00.000+00:00","category":{"id":"31e0acf7-72e8-4c92-b0ff-8787b79b0948","name":"category 2","username":"test1","archived":false},"currency":"RUB","amount":2285.2,"description":"Where matter that couple bit line.","username":"test1"},{"id":"191758f7-e382-46d2-8653-721d19c382d7","spendDate":"2025-05-20T21:00:00.000+00:00","category":{"id":"154532f6-4d7a-4c31-ba10-36fe796763d2","name":"category 1","username":"test1","archived":false},"currency":"EUR","amount":3390.5,"description":"Blue employee hit think drive.","username":"test1"},{"id":"46be29bd-bb86-4af6-b03e-109900c32c92","spendDate":"2025-05-15T21:00:00.000+00:00","category":{"id":"154532f6-4d7a-4c31-ba10-36fe796763d2","name":"category 1","username":"test1","archived":false},"currency":"USD","amount":1596.11,"description":"According along those take no stock.","username":"test1"},{"id":"af9fdd6f-6609-4b94-b54f-182dcb53f8f5","spendDate":"2025-05-12T21:00:00.000+00:00","category":{"id":"31e0acf7-72e8-4c92-b0ff-8787b79b0948","name":"category 2","username":"test1","archived":false},"currency":"KZT","amount":2684.57,"description":"Really rule wife growth create large face play.","username":"test1"},{"id":"5f3c961f-6ba2-48be-9797-e136f3de5080","spendDate":"2025-05-05T21:00:00.000+00:00","category":{"id":"154532f6-4d7a-4c31-ba10-36fe796763d2","name":"category 1","username":"test1","archived":false},"currency":"USD","amount":3840.85,"description":"Yeah tax car situation.","username":"test1"},{"id":"9fdf5900-b731-4c07-9682-ea9def99d192","spendDate":"2025-05-01T21:00:00.000+00:00","category":{"id":"154532f6-4d7a-4c31-ba10-36fe796763d2","name":"category 1","username":"test1","archived":false},"currency":"EUR","amount":2342.73,"description":"Either music because according.","username":"test1"}]

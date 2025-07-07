@@ -75,3 +75,6 @@ coverage.xml
 # Local env files
 .env
 .env.*
+
+# Отчеты и результаты тестов
+allure-results/

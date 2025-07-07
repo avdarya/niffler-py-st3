@@ -1,0 +1,29 @@
+< POST /api/spends/add HTTP/1.1
+< Host: gateway.niffler.dc:8090
+< User-Agent: python-requests/2.32.4
+< Accept-Encoding: gzip, deflate
+< Accept: application/json
+< Connection: keep-alive
+< Authorization: Bearer eyJraWQiOiIyNWVlZTJjNC0wNjBiLTQxYmQtOGUyZC1kYTk5NGMzYWQxYmIiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJ0ZXN0MSIsImF1ZCI6ImNsaWVudCIsImF6cCI6ImNsaWVudCIsImF1dGhfdGltZSI6MTc1MTYzNTQ5MSwiaXNzIjoiaHR0cDovL2F1dGgubmlmZmxlci5kYzo5MDAwIiwiZXhwIjoxNzUxNjM3MjkxLCJpYXQiOjE3NTE2MzU0OTEsImp0aSI6IjRhZjg0N2YyLTAxOTAtNDlhNC1hMzQ1LTlmNmU4YzllOTMzZSIsInNpZCI6IkVsaG5Fd01SQUc0Ykd2X0szbmRGRm9OX1BkZDhCcmQxMm94VlNOQ1h5cUkifQ.JlDw4s4Tmw6X6u-ExLm6kQwLg3JsHvQOCldIrRPY4Yi9zR-0EtaszqcY81SSBUD9p-EmwmgCIOZQah8ltW_6LNe-clW62-J0uvdOVQwo_0iV6Y_P0d2FZKkdN6dsDVYYjGpUnkoqY6Eywyn3wus6rPZr7B2cud_ZsqL72RUDNOntkWucjIzaaMCrh6e4xLFHzp-9eXMDZF7P7UpbqEvF3xQhRDMrl45uXB7s-lbz23Me_jlKHjFYGZPR7JzSF3smXabJ8_Jck61_g80uPQfTF_nrK8Ix2gE66hgZb4FVSsBggmgh0nURSfXCxsTGJ-Syv7c1ukWtOgdJyROANfEaXA
+< Content-Type: application/json
+< Content-Length: 153
+< 
+< {"amount": 2285.2, "description": "Where matter that couple bit line.", "currency": "RUB", "spendDate": "2025-05-25", "category": {"name": "category 2"}}
+
+> HTTP/1.1 201 
+> Vary: Origin
+> Vary: Access-Control-Request-Method
+> Vary: Access-Control-Request-Headers
+> X-Content-Type-Options: nosniff
+> X-XSS-Protection: 0
+> Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+> Pragma: no-cache
+> Expires: 0
+> X-Frame-Options: DENY
+> Content-Type: application/json
+> Transfer-Encoding: chunked
+> Date: Fri, 04 Jul 2025 13:25:19 GMT
+> Keep-Alive: timeout=60
+> Connection: keep-alive
+> 
+{"id":"424e7063-c5d4-41fe-ae09-525a6b37a993","spendDate":"2025-05-25T00:00:00.000+00:00","category":{"id":"df6dc0b5-6b0d-4e62-b4f7-54e043cfd785","name":"category 2","username":"test1","archived":false},"currency":"RUB","amount":2285.2,"description":"Where matter that couple bit line.","username":"test1"}

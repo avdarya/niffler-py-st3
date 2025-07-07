@@ -1,4 +1,7 @@
+import allure
+from allure_commons.types import AttachmentType
 from requests import Session, Response
+from requests_toolbelt.utils.dump import dump_response
 
 
 class BaseSession(Session):
@@ -15,6 +18,12 @@ class BaseSession(Session):
             "Accept": "application/json",
             "Content-Type": "application/json",
         })
+        self.hooks['response'].append(self.attach_response)
+
+    @staticmethod
+    def attach_response(response: Response, *args, **kwargs):
+        attachment_name = response.request.method + ' ' + response.request.url
+        allure.attach(dump_response(response), attachment_name, attachment_type=AttachmentType.TEXT)
 
     def request(self, method: str, path: str, **kwargs) -> Response:
         url = self.__gateway_url + path

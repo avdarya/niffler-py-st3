@@ -1,0 +1,3 @@
+SELECT spend.id, spend.amount, spend.description, spend.category_id, spend.username, spend.spend_date, spend.currency 
+FROM spend 
+WHERE spend.id = efdd517c-9853-4014-bc54-0590f107a659

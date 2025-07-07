@@ -1,0 +1,26 @@
+< DELETE /api/spends/remove?ids=fb90938d-9463-4cd3-9ed1-466da85e885d%2Ced89d175-36aa-4156-b0be-52147fafaad6%2C8399c456-eb4c-4a43-b45d-792f59060db8%2Ce5c8bf91-2870-4eb9-a400-1689886a0f4b%2Cf358c7bd-b85d-44c4-bbdf-73047e31c31d%2C06d5aa5d-6db4-4bc7-999a-967b1f2c3c8f%2C5c5b02e4-1a1c-4688-a0cb-dd319a269cf7%2Cd3108dbc-8d12-4a96-b743-157996097956%2Cd9298de5-ab87-4889-9609-f74861654369%2C3ec3d01e-0925-4a0a-a99b-54f8107d1e8b%2Cdf8f024c-16e6-43ad-acb3-47f0d72bd216%2Ccd24079b-de5d-4ea3-b944-38bfee5f520b HTTP/1.1
+< Host: gateway.niffler.dc:8090
+< User-Agent: python-requests/2.32.4
+< Accept-Encoding: gzip, deflate
+< Accept: application/json
+< Connection: keep-alive
+< Authorization: Bearer eyJraWQiOiIyNWVlZTJjNC0wNjBiLTQxYmQtOGUyZC1kYTk5NGMzYWQxYmIiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJ0ZXN0MSIsImF1ZCI6ImNsaWVudCIsImF6cCI6ImNsaWVudCIsImF1dGhfdGltZSI6MTc1MTYzNTQ5MSwiaXNzIjoiaHR0cDovL2F1dGgubmlmZmxlci5kYzo5MDAwIiwiZXhwIjoxNzUxNjM3MjkxLCJpYXQiOjE3NTE2MzU0OTEsImp0aSI6IjRhZjg0N2YyLTAxOTAtNDlhNC1hMzQ1LTlmNmU4YzllOTMzZSIsInNpZCI6IkVsaG5Fd01SQUc0Ykd2X0szbmRGRm9OX1BkZDhCcmQxMm94VlNOQ1h5cUkifQ.JlDw4s4Tmw6X6u-ExLm6kQwLg3JsHvQOCldIrRPY4Yi9zR-0EtaszqcY81SSBUD9p-EmwmgCIOZQah8ltW_6LNe-clW62-J0uvdOVQwo_0iV6Y_P0d2FZKkdN6dsDVYYjGpUnkoqY6Eywyn3wus6rPZr7B2cud_ZsqL72RUDNOntkWucjIzaaMCrh6e4xLFHzp-9eXMDZF7P7UpbqEvF3xQhRDMrl45uXB7s-lbz23Me_jlKHjFYGZPR7JzSF3smXabJ8_Jck61_g80uPQfTF_nrK8Ix2gE66hgZb4FVSsBggmgh0nURSfXCxsTGJ-Syv7c1ukWtOgdJyROANfEaXA
+< Content-Type: application/json
+< Content-Length: 0
+< 
+
+> HTTP/1.1 200 
+> Vary: Origin
+> Vary: Access-Control-Request-Method
+> Vary: Access-Control-Request-Headers
+> X-Content-Type-Options: nosniff
+> X-XSS-Protection: 0
+> Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+> Pragma: no-cache
+> Expires: 0
+> X-Frame-Options: DENY
+> Content-Length: 0
+> Date: Fri, 04 Jul 2025 13:25:16 GMT
+> Keep-Alive: timeout=60
+> Connection: keep-alive
+> 

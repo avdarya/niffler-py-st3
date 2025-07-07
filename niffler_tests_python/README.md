@@ -15,9 +15,13 @@
   docker-compose-dev.sh
 ```
 5. Запустить тесты:
+Из корневого каталога проекта
 ```bash
   chmod +x run_tests.sh
   ./run_tests.sh
   ./run_tests.sh --env=rc
+```
+Из директории с тестами
+```bash
   pytest --env=rc 
 ```
