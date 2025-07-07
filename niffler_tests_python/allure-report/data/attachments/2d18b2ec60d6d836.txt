@@ -1,1 +1,0 @@
-DELETE FROM category WHERE category.id = ec6013d1-601c-4a07-aba4-d59d2ffe679f

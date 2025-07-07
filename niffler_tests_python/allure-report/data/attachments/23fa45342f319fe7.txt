@@ -1,3 +1,0 @@
-SELECT spend.id, spend.amount, spend.description, spend.category_id, spend.username, spend.spend_date, spend.currency 
-FROM spend 
-WHERE spend.id = eb7cc00f-3981-4688-a343-00ef5e4f661a

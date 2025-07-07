@@ -1,3 +1,0 @@
-SELECT category.id AS category_id, category.name AS category_name, category.username AS category_username, category.archived AS category_archived 
-FROM category 
-WHERE category.id = 880aa87d-2dd4-44fc-99d8-6059f8638498
