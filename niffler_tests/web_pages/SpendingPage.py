@@ -3,14 +3,17 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
+from niffler_tests.configuration.ConfigProvider import ConfigProvider
 
 
 class SpendingPage:
 
     __driver: WebDriver
+    __timeout: float
 
-    def __init__(self, driver: WebDriver):
+    def __init__(self, driver: WebDriver, config: ConfigProvider):
         self.__driver = driver
+        self.__timeout = config.get_timeout()
 
     def clear_amount_input(self) -> None:
         self.__driver.find_element(By.CSS_SELECTOR, 'input[name="amount"]').clear()
@@ -72,7 +75,7 @@ class SpendingPage:
             By.XPATH,
             f'//span[contains(@class, "MuiChip-label") and text()="{category_name}"]'
         ).click()
-        WebDriverWait(self.__driver, 2).until(
+        WebDriverWait(self.__driver, self.__timeout).until(
             lambda d: d.find_element(By.ID, "category").get_attribute("value") != ""
         )
 
