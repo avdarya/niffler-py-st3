@@ -5,4 +5,4 @@ set -e
 export PYTHONPATH=$(pwd)/niffler_tests
 
 echo "Running all tests..."
-pytest niffler_tests "$@"
+pytest niffler_tests_python "$@"
