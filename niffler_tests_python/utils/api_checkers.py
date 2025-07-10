@@ -1,5 +1,4 @@
 import time
-
 from niffler_tests_python.clients.spend_client import SpendApiClient
 from niffler_tests_python.model.spend import SpendModel
 

@@ -15,9 +15,25 @@
   docker-compose-dev.sh
 ```
 5. Запустить тесты:
+Из корневого каталога проекта
 ```bash
   chmod +x run_tests.sh
   ./run_tests.sh
   ./run_tests.sh --env=rc
+```
+Из директории с тестами
+```bash
   pytest --env=rc 
 ```
+
+
+
+#!/bin/bash
+
+set -e
+
+export PYTHONPATH=$(pwd)/niffler_tests
+
+echo "Running all tests..."
+pytest niffler_tests_python "$@"
+

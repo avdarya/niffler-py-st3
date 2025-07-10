@@ -1,32 +1,36 @@
+import allure
 from niffler_tests_python.configuration.ConfigProvider import ConfigProvider
-from selenium.webdriver.chrome.webdriver import WebDriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.webdriver import WebDriver
+
+from niffler_tests_python.model.config import Envs
+from niffler_tests_python.web_pages.BasePage import BasePage
+from niffler_tests_python.web_pages.locators.LoginPageLocators import LoginPageLocators
 
 
-class LoginPage:
+class LoginPage(BasePage):
 
-    __driver: WebDriver
     __url: str
-    __timeout: float
 
-    def __init__(self, driver: WebDriver, config: ConfigProvider):
-        self.__driver = driver
-        self.__url = config.get_frontend_auth_url() + "/login"
-        self.__timeout = config.get_timeout()
+    def __init__(self, driver: WebDriver, config: ConfigProvider, envs: Envs):
+        super().__init__(driver, config)
+        self.__url = envs.frontend_url + "/login"
+        self.locator = LoginPageLocators()
 
+    @allure.step('[UI /login] Open /login')
     def open(self) -> None:
-        self.__driver.get(self.__url)
+        self._driver.get(self.__url)
 
+    @allure.step('[UI /login] Enter username: username={username}')
     def enter_username(self, username: str) -> None:
-        self.__driver.find_element(By.CSS_SELECTOR, 'input[name="username"]').send_keys(username)
+        self.wait_for(self.locator.USERNAME_INPUT, EC.visibility_of_element_located)
+        self._driver.find_element(*self.locator.USERNAME_INPUT).send_keys(username)
 
+    @allure.step('[UI /login] Enter password: password={password}')
     def enter_password(self, password: str) -> None:
-        self.__driver.find_element(By.CSS_SELECTOR, 'input[name="password"').send_keys(password)
+        self._driver.find_element(*self.locator.PASSWORD_INPUT).send_keys(password)
 
+    @allure.step('[UI /login] Click login button')
     def click_login_button(self) -> None:
-        self.__driver.find_element(By.CSS_SELECTOR, 'button[type="submit"').click()
-        WebDriverWait(self.__driver, self.__timeout).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, 'img[alt="Niffler logo"]'))
-        )
+        self._driver.find_element(*self.locator.SUBMIT_BUTTON).click()
+        self.wait_for(self.locator.NIFFLER_LOGO)
