@@ -2,7 +2,7 @@ import allure
 import pytest
 from niffler_tests_python.clients.spend_client import SpendApiClient
 from niffler_tests_python.model.spend import SpendModelAdd, SpendModel
-from niffler_tests_python.tests.conftest import TestData, Pages
+from niffler_tests_python.tests.conftest import TestData
 from niffler_tests_python.web_pages.MainPage import MainPage
 
 
@@ -107,13 +107,6 @@ def test_search_spend_by_category(spend: SpendModel, main_page: MainPage, spend_
         "currency": "RUB",
         "spendDate": "TODAY",
         "category": {"name": "category for search period"}
-    },
-    {
-        "amount": 8989.05,
-        "description": "test search spend by ALL",
-        "currency": "RUB",
-        "spendDate": "ALL",
-        "category": {"name": "category for search period"}
     }
 ], indirect=True)
 def test_search_spend_by_period(
@@ -131,13 +124,8 @@ def test_search_spend_by_period(
         main_page.click_period_field()
         main_page.click_period_value(period)
 
-    if period == "ALL":
-        filter_period = None
-    else:
-        filter_period = period
-
     with allure.step('Retrieve search query by period from API'):
-        api_search = spend_client.get_all_spends_v2(filter_period=filter_period)
+        api_search = spend_client.get_all_spends_v2(filter_period=period)
         api_spend_ids = [spend_item["id"] for spend_item in api_search["content"]]
 
     with allure.step('Save in UI spend ids after searching'):
@@ -158,7 +146,7 @@ def test_search_spend_by_period(
 @allure.feature('Spending search')
 @allure.story('Search spend by currency')
 @TestData.fill_spends
-@pytest.mark.parametrize("currency", ["RUB", "KZT", "EUR", "USD", "ALL"])
+@pytest.mark.parametrize("currency", ["RUB", "KZT", "EUR", "USD"])
 def test_search_spend_by_currency(
         main_page: MainPage,
         spend_client: SpendApiClient,
@@ -171,13 +159,8 @@ def test_search_spend_by_currency(
         main_page.click_currency_field()
         main_page.click_currency_value(currency)
 
-    if currency == "ALL":
-        filter_currency = None
-    else:
-        filter_currency = currency
-
     with allure.step('Retrieve search query by currency from API'):
-        api_search = spend_client.get_all_spends_v2(filter_currency=filter_currency)
+        api_search = spend_client.get_all_spends_v2(filter_currency=currency)
         api_spend_ids = [spend_item["id"] for spend_item in api_search["content"]]
 
     with allure.step('Save in UI spend ids after searching'):

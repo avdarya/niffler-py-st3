@@ -94,8 +94,7 @@ def test_delete_spending_by_list(main_page: MainPage, spend_client: SpendApiClie
         after_spend_ids = [spend.id for spend in after_spending]
 
     with allure.step('Verify deleted spends are absent in DB'):
-        for spend_id in selected_spend_ids:
-            assert spend_db.get_spend(spend_id) is None
+        assert len(spend_db.get_spend_list(selected_spend_ids)) == 0
 
     with allure.step('Assert spend rows deleted after multi select'):
         with allure.step('Spending count after = spending count before + selected spend row count'):

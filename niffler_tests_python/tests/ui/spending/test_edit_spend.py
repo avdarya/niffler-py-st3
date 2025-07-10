@@ -70,21 +70,9 @@ def test_edit_spend(
         edited_spend_row = wait_for_spend_row(main_page=main_page, spend_id=spend.id)
 
     with allure.step('Retrieve edited spend from API'):
-        api_spend = spend_client.get_all_spends()
-        for api_spend in api_spend:
-            if api_spend.id == spend.id:
-                local_dt = api_spend.spendDate.astimezone(tz.tzlocal())
-                date_str = local_dt.strftime("%m/%d/%Y")
-                with allure.step('Verify edited spend date in API'):
-                    assert date_str == spend_date
-                with allure.step('Verify edited spend category in API'):
-                    assert api_spend.category.name == new_category
-                with allure.step('Verify edited spend currency in API'):
-                    assert api_spend.currency == currency
-                with allure.step('Verify edited spend amount in API'):
-                    assert api_spend.amount == float(amount)
-                with allure.step('Verify edited spend description in API'):
-                    assert api_spend.description == description
+        api_spend = spend_client.get_spend_by_id(spend.id)
+        local_dt = api_spend.spendDate.astimezone(tz.tzlocal())
+        date_str = local_dt.strftime("%m/%d/%Y")
 
     with allure.step('Retrieve edited spend in DB'):
         db_spend = spend_db.get_spend(spend_id=spend.id)
@@ -102,6 +90,17 @@ def test_edit_spend(
                 description=description,
                 spend_date=spend_date
             )
+        with allure.step('Verify edited spend date in API'):
+            assert date_str == spend_date
+        with allure.step('Verify edited spend category in API'):
+            assert api_spend.category.name == new_category
+        with allure.step('Verify edited spend currency in API'):
+            assert api_spend.currency == currency
+        with allure.step('Verify edited spend amount in API'):
+            assert api_spend.amount == float(amount)
+        with allure.step('Verify edited spend description in API'):
+            assert api_spend.description == description
+
         with allure.step('Verify edited spend amount in DB'):
             assert db_spend.amount == float(amount)
         with allure.step('Verify edited spend currency in DB'):

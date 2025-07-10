@@ -38,7 +38,7 @@ def test_edit_category_by_icon(
 
    with allure.step('Retrieve edited category form API and verify category name, archived'):
       wait_for_category_update_name(
-         categories_client=category_client,
+         category_client=category_client,
          category_id=category.id,
          expected_name=new_category_name
       )
@@ -80,7 +80,7 @@ def test_cancel_edit_category(
 
    with allure.step('Save edited category from API'):
       api_category = wait_for_category_update_name(
-         categories_client=category_client,
+         category_client=category_client,
          category_id=category.id,
          expected_name=category.name
       )

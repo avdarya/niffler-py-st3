@@ -2,6 +2,7 @@ import allure
 from selenium.common import NoSuchElementException
 from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.remote.webdriver import WebDriver
 from niffler_tests_python.configuration.ConfigProvider import ConfigProvider
 from niffler_tests_python.web_pages.BasePage import BasePage
@@ -51,15 +52,17 @@ class ProfilePage(BasePage):
 
     @allure.step('[UI /profile] Click edit category icon: category_name={category_name}')
     def click_edit_category_icon(self, category_name: str) -> None:
-        category_box = self.wait_for_visibility_element(
+        category_box = self.wait_for(
             (self.locator.CATEGORY_BOX[0],
-            self.locator.CATEGORY_BOX[1].format(category_name))
+            self.locator.CATEGORY_BOX[1].format(category_name)),
+            EC.visibility_of_element_located
         )
         edit_icon = category_box.find_element(*self.locator.EDIT_ICON)
         edit_icon.click()
 
     @allure.step('[UI /profile] Click category chip: category_name={category_name}')
     def click_category_chip(self, category_name: str) -> None:
+        self.wait_for(self.locator.CATEGORY_CHIP,  EC.visibility_of_any_elements_located)
         chips = self._driver.find_elements(*self.locator.CATEGORY_CHIP)
         for chip in chips:
             if chip.text == category_name:
@@ -67,22 +70,26 @@ class ProfilePage(BasePage):
 
     @allure.step('[UI /profile] Click close edit category')
     def click_close_edit_category(self) -> None:
+
+        self.wait_for(self.locator.CLOSE_ICON, EC.visibility_of_element_located)
         self._driver.find_element(*self.locator.CLOSE_ICON).click()
 
     @allure.step('[UI /profile] Click archive category icon: category_name={category_name}')
     def click_archive_category_icon(self, category_name: str) -> None:
-        category_box = self.wait_for_visibility_element(
+        category_box = self.wait_for(
             (self.locator.CATEGORY_BOX[0],
-             self.locator.CATEGORY_BOX[1].format(category_name))
+            self.locator.CATEGORY_BOX[1].format(category_name)),
+            EC.visibility_of_element_located
         )
         archive_icon = category_box.find_element(*self.locator.ARCHIVE_ICON)
         archive_icon.click()
 
     @allure.step('[UI /profile] Click unarchive category icon: category_name={category_name}')
     def click_unarchive_category_icon(self, category_name: str) -> None:
-        category_box = self.wait_for_visibility_element(
+        category_box = self.wait_for(
             (self.locator.CATEGORY_BOX[0],
-             self.locator.CATEGORY_BOX[1].format(category_name))
+            self.locator.CATEGORY_BOX[1].format(category_name)),
+            EC.visibility_of_element_located
         )
         unarchive_icon = category_box.find_element(*self.locator.UNARCHIVE_ICON)
         unarchive_icon.click()
@@ -93,6 +100,7 @@ class ProfilePage(BasePage):
 
     @allure.step('[UI /profile] Click submit unarchive category button')
     def click_unarchive_category_button(self) -> None:
+        self.wait_for(self.locator.SUBMIT_UNARCHIVE_BUTTON, EC.visibility_of_element_located)
         self._driver.find_element(*self.locator.SUBMIT_UNARCHIVE_BUTTON).click()
 
     @allure.step('[UI /profile] Click save changes button')
@@ -110,14 +118,13 @@ class ProfilePage(BasePage):
 
     @allure.step('[UI /profile] Get description from submit popup')
     def submit_dialog_description(self) -> str:
-        submit_dialog = self.wait_for_visibility_element(self.locator.SUBMIT_POPUP)
+        submit_dialog = self.wait_for(self.locator.SUBMIT_POPUP, EC.visibility_of_element_located)
         submit_dialog_description = submit_dialog.find_element(*self.locator.POPUP_DESCRIPTION)
         return submit_dialog_description.text
 
     @allure.step('[UI /profile] Get title from submit popup')
     def submit_dialog_title(self) -> str:
-        submit_dialog = self.wait_for_visibility_element(self.locator.SUBMIT_POPUP)
-
+        submit_dialog = self.wait_for(self.locator.SUBMIT_POPUP, EC.visibility_of_element_located)
         submit_dialog_title = submit_dialog.find_element(*self.locator.POPUP_TITLE)
         return submit_dialog_title.text
 
@@ -136,9 +143,10 @@ class ProfilePage(BasePage):
 
     @allure.step('[UI /profile] Check archiving category chip')
     def is_active_category_chip(self, category_name: str) -> bool:
-        category_box = self.wait_for_visibility_element(
+        category_box = self.wait_for(
             (self.locator.CATEGORY_BOX[0],
-             self.locator.CATEGORY_BOX[1].format(category_name))
+            self.locator.CATEGORY_BOX[1].format(category_name)),
+            EC.visibility_of_element_located
         )
         category_chip = category_box.find_element(*self.locator.CATEGORY_CHIP)
         classes = set(category_chip.get_attribute('class').split(' '))
@@ -147,9 +155,10 @@ class ProfilePage(BasePage):
 
     @allure.step('[UI /profile] Check display edit icon: category_name={category_name}')
     def is_display_edit_icon(self, category_name: str) -> bool:
-        category_box = self.wait_for_visibility_element(
+        category_box = self.wait_for(
             (self.locator.CATEGORY_BOX[0],
-             self.locator.CATEGORY_BOX[1].format(category_name))
+            self.locator.CATEGORY_BOX[1].format(category_name)),
+            EC.visibility_of_element_located
         )
         try:
             edit_icon = category_box.find_element(*self.locator.EDIT_ICON)
@@ -159,9 +168,10 @@ class ProfilePage(BasePage):
 
     @allure.step('[UI /profile] Check display archive icon: category_name={category_name}')
     def is_display_archive_icon(self, category_name: str) -> bool:
-        category_box = self.wait_for_visibility_element(
+        category_box = self.wait_for(
             (self.locator.CATEGORY_BOX[0],
-             self.locator.CATEGORY_BOX[1].format(category_name))
+            self.locator.CATEGORY_BOX[1].format(category_name)),
+            EC.visibility_of_element_located
         )
         try:
             archive_icon = category_box.find_element(*self.locator.ARCHIVE_ICON)
@@ -171,6 +181,5 @@ class ProfilePage(BasePage):
 
     @allure.step('[UI /profile] Get alert text')
     def alert_on_action(self) -> str:
-        alert = self.wait_for_visibility_element(self.locator.ALERT_DIALOG)
+        alert = self.wait_for(self.locator.ALERT_DIALOG)
         return alert.text
-

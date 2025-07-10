@@ -37,7 +37,7 @@ def test_archive_category(
 
    with allure.step('Retrieve archived category from API'):
       wait_for_category_update_archive(
-         categories_client=category_client,
+         category_client=category_client,
          category_id=category_id,
          expected_archive=True
       )
@@ -93,7 +93,7 @@ def test_unarchive_category(
 
    with allure.step('Retrieve unarchived category from API'):
       wait_for_category_update_archive(
-         categories_client=category_client,
+         category_client=category_client,
          category_id=category_id,
          expected_archive=False
       )
@@ -108,10 +108,10 @@ def test_unarchive_category(
       with allure.step('Verify category name in alert text'):
          assert category_name in alert_text
       with allure.step('Verify category chip is active in UI'):
-         assert is_active_category_chip == True
+         assert is_active_category_chip
       with allure.step('Verify category row contains edit icon in UI'):
-         assert is_display_edit_icon == True
+         assert is_display_edit_icon
       with allure.step('Verify category row contains archive icon in UI'):
-         assert is_display_archive_icon == True
+         assert is_display_archive_icon
    with allure.step('Verify category in DB is unarchived'):
       assert db_category.archived is False

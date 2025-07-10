@@ -15,10 +15,7 @@ class ConfigProvider:
         return self.config[section].get(prop)
 
     def get_timeout(self) -> float:
-        return float(self.config['ui'].getint('timeout'))
+        return float(self.config['ui'].get('timeout'))
 
-    def get_frontend_url(self) -> str:
-        return self.config['ui'].get('frontend_url')
-
-    def get_frontend_auth_url(self) -> str:
-        return self.config['ui'].get('auth_url')
+    def get_poll(self) -> float:
+        return float(self.config['ui'].get('poll'))

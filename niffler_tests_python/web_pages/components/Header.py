@@ -21,5 +21,4 @@ class Header(BasePage):
 
     @allure.step('[UI header] Click new spending button')
     def click_new_spending(self) -> None:
-        self.wait_for_visibility_element(self.locator.SPENDING_BUTTON)
         self._driver.find_element(*self.locator.SPENDING_BUTTON).click()

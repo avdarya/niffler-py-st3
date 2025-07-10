@@ -2,9 +2,9 @@ from selenium.webdriver.common.by import By
 
 
 class MainPageLocators:
-    LOGO_IMG = (By.CSS_SELECTOR, 'img[alt="Niffler logo"]')
+    NIFFLER_IMG = (By.CSS_SELECTOR, 'img[alt="Niffler logo"]')
     LONELY_NIFFLER_IMG = (By.CSS_SELECTOR, 'img[alt="Lonely niffler"')
-    CHECKBOX = (By.CSS_SELECTOR, f'input[type="checkbox"]')
+    CHECKBOX = (By.CSS_SELECTOR, 'input[type="checkbox"]')
     MULTI_SELECT_CHECKBOX = (By.CSS_SELECTOR, 'input[aria-label="select all rows"]')
     EDIT_ICON = (By.CSS_SELECTOR,'button[aria-label="Edit spending"]')
     AMOUNT_INPUT = ( By.ID, 'amount')
@@ -14,7 +14,6 @@ class MainPageLocators:
     CANCEL_DELETE_BUTTON = (By.XPATH, './/button[normalize-space(text())="Cancel"]')
     NEXT_PAGE_BUTTON = (By.ID, 'page-next')
     PREVIOUS_PAGE_BUTTON = (By.ID, 'page-prev')
-    # ALERT_DIALOG = (By.XPATH, '//div[@role="alert"]')
     ALERT_DIALOG = (By.CSS_SELECTOR, 'div[role="alert"]')
     PERIOD_FIELD = (By.ID, 'period')
     PERIOD_VALUE = (By.CSS_SELECTOR, 'li[data-value="{}"]')

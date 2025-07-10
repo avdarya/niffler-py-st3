@@ -11,7 +11,7 @@ from niffler_tests_python.web_pages.ProfilePage import ProfilePage
 @allure.story('Update fullname')
 @Pages.go_to_profile_page
 @pytest.mark.parametrize("fullname", ["Alex", "Mike"])
-def test_update_name(
+def  test_update_name(
         profile_page: ProfilePage,
         user_client: UserApiClient,
         userdata_db: UserdataDB,

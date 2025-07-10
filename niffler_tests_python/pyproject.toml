@@ -1,0 +1,40 @@
+[project]
+name = "niffler-tests-python"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "avdarya",email = "avdarya@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.10,<3.13"
+dependencies = [
+    "python-dotenv (>=1.1.1,<2.0.0)",
+    "requests (>=2.32.4,<3.0.0)",
+    "pydantic (>=2.11.7,<3.0.0)",
+    "python-dateutil (>=2.9.0.post0,<3.0.0)",
+    "selenium (>=4.34.2,<5.0.0)",
+    "requests-toolbelt (>=1.0.0,<2.0.0)",
+    "psycopg2-binary (>=2.9.10,<3.0.0)",
+    "sqlalchemy (>=2.0.41,<3.0.0)",
+    "sqlmodel (>=0.0.24,<0.0.25)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.4.1"
+faker = "^37.4.0"
+allure-pytest = "^2.14.3"
+ruff = "^0.12.2"
+
+[tool.poetry]
+package-mode = false
+
+[tool.pytest.ini_options]
+addopts = [
+    "--alluredir=allure-results",
+    "--clean-alluredir"
+]

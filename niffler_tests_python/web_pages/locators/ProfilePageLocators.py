@@ -6,7 +6,7 @@ class ProfilePageLocators:
     ADD_CATEGORY_INPUT = (By.CSS_SELECTOR, 'input[placeholder="Add new category"]')
     EDIT_CATEGORY_INPUT = (By.CSS_SELECTOR, 'input[placeholder="Edit category"]')
     CATEGORY_CHIP_BY_NAME = (By.XPATH, '//div[contains(@class, "MuiChip-clickable") and .//span[text()="{}"]]')
-    CATEGORY_CHIP = (By.CSS_SELECTOR, 'div[role="button"]')
+    CATEGORY_CHIP = (By.CSS_SELECTOR, 'div.MuiChip-root[role="button"]')
     CATEGORY_BOX = (By.XPATH, '//span[text()="{}"]/ancestor::div[contains(@class, "MuiBox-root")]')
     EDIT_ICON = (By.CSS_SELECTOR, 'button[aria-label="Edit category"]')
     CLOSE_ICON = (By.CSS_SELECTOR, 'button[aria-label="close"]')

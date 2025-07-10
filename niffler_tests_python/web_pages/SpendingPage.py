@@ -1,5 +1,6 @@
 import allure
 from selenium.webdriver.chrome.webdriver import WebDriver
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
 from niffler_tests_python.configuration.ConfigProvider import ConfigProvider
@@ -68,7 +69,7 @@ class SpendingPage(BasePage):
     @allure.step('[UI /spending] Click currency input')
     def click_currency_input(self) -> None:
         self._driver.find_element(*self.locator.CURRENCY_INPUT).click()
-        self.wait_for_visibility_element(self.locator.CURRENCY_DIALOG)
+        self.wait_for(self.locator.CURRENCY_DIALOG, EC.visibility_of_element_located)
 
     @allure.step('[UI /spending] Click currency value: currency_value={currency_value}')
     def click_currency_value(self, currency_value: str) -> None:

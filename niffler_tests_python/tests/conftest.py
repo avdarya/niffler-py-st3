@@ -1,25 +1,23 @@
-import json
 import allure
 import dotenv
 import os
 import pytest
-from pathlib import Path
-from datetime import datetime, timedelta
 from typing import Any
 from collections.abc import Generator
 
 from _pytest.config import Config
 from _pytest.main import Session
+from _pytest.mark import MarkDecorator
 from allure_commons.reporter import AllureReporter
 from allure_commons.types import AttachmentType
 from allure_pytest.listener import AllureListener
 from pytest import Item, FixtureDef, FixtureRequest
 from selenium import webdriver
 from selenium.webdriver.remote.webdriver import WebDriver
-from selenium.webdriver.chrome.service import Service as ChromeService
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium.webdriver.support.wait import WebDriverWait
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.firefox.options import Options
+
+from niffler_tests_python.clients.auth_client import AuthClient
 from niffler_tests_python.clients.category_client import CategoryApiClient
 from niffler_tests_python.clients.spend_client import SpendApiClient
 from niffler_tests_python.clients.user_client import UserApiClient
@@ -90,40 +88,39 @@ def config() -> ConfigProvider:
     return ConfigProvider()
 
 @pytest.fixture(scope="session")
-def envs(config: ConfigProvider) -> Envs:
+def envs() -> Envs:
     dotenv.load_dotenv()
     envs_instance = Envs(
-        frontend_url=config.get_frontend_url(),
-        # gateway_url=base_session.,
+        frontend_url=os.getenv("FRONTEND_URL"),
+        gateway_url=os.getenv("GATEWAY_URL"),
+        auth_url=os.getenv("AUTH_URL"),
         spend_db_url=os.getenv("SPEND_DB_URL"),
         userdata_db_url=os.getenv("USERDATA_DB_URL"),
-        username=os.getenv("LOGIN"),
+        username=os.getenv("USERNAME"),
         password=os.getenv("PASSWORD"),
     )
     # allure.attach(envs_instance.model_dump_json(indent=2), name='envs.json', attachment_type=AttachmentType.JSON)
     return envs_instance
 
 @pytest.fixture(scope="session")
-def browser(config: ConfigProvider) -> Generator[WebDriver]:
-    timeout = config.get_timeout()
+def browser(config: ConfigProvider) -> Generator[WebDriver, None, None]:
     browser_name = config.get_prop("ui", "browser_name")
     if browser_name == 'chrome':
-        service = ChromeService(ChromeDriverManager().install())
-        browser = webdriver.Chrome(service=service)
+        browser = webdriver.Chrome()
+
     else:
-        options = Options()
-        options.page_load_strategy = 'normal'
+        options = FirefoxOptions()
         browser = webdriver.Firefox(options=options)
-    browser.implicitly_wait(timeout)
-    browser.maximize_window()
+
+    browser.set_window_size(1280, 800)
 
     yield browser
 
     browser.quit()
 
 @pytest.fixture(scope='session')
-def login_page(browser: WebDriver, config: ConfigProvider) -> LoginPage:
-    return LoginPage(browser, config)
+def login_page(browser: WebDriver, config: ConfigProvider, envs: Envs) -> LoginPage:
+    return LoginPage(driver=browser, config=config, envs=envs)
 
 @pytest.fixture(scope="session")
 def auth_browser(browser: WebDriver, login_page: LoginPage, envs: Envs) -> WebDriver:
@@ -134,16 +131,23 @@ def auth_browser(browser: WebDriver, login_page: LoginPage, envs: Envs) -> WebDr
     return browser
 
 @pytest.fixture(scope="session")
-def token(auth_browser: WebDriver) -> str:
+def auth_front(auth_browser: WebDriver) -> str:
     def token_present(driver: WebDriver) -> str:
         return auth_browser.execute_script('return window.localStorage.getItem("id_token")')
     token = WebDriverWait(auth_browser, 5).until(token_present)
     allure.attach(token, name='token.txt', attachment_type=AttachmentType.TEXT)
     return token
 
+@pytest.fixture(scope="session")
+def auth_api_token(envs: Envs) -> str:
+    auth_client = AuthClient(envs.auth_url)
+    token = auth_client.auth(envs.username, envs.password)
+    allure.attach(token, name='token.txt', attachment_type=AttachmentType.TEXT)
+    return token
+
 @pytest.fixture(scope='session')
-def main_page(auth_browser: WebDriver, config: ConfigProvider) -> MainPage:
-    return MainPage(driver=auth_browser, config=config)
+def main_page(auth_browser: WebDriver, config: ConfigProvider, envs: Envs) -> MainPage:
+    return MainPage(driver=auth_browser, config=config, envs=envs)
 
 @pytest.fixture(scope='session')
 def spending_page(auth_browser: WebDriver, config: ConfigProvider) -> SpendingPage:
@@ -165,31 +169,10 @@ def go_to_main_page(main_page: MainPage) -> None:
 def go_to_main_page_after_spend(main_page: MainPage, spend: SpendModel) -> None:
     main_page.open()
 
-@pytest.fixture(scope='function')
-def go_to_main_page_after_fill_spends(main_page: MainPage, fill_spends: SpendModel) -> None:
-    main_page.open()
-
-@pytest.fixture(scope='function')
-def go_to_profile_page(main_page: MainPage, profile_page: ProfilePage, header: Header) -> None:
-    main_page.open()
-    header.click_menu_button()
-    header.click_profile()
-
-@pytest.fixture(scope='function')
-def go_to_profile_after_category(
-        main_page: MainPage,
-        profile_page: ProfilePage,
-        header: Header,
-        category: CategoryModel
-) -> None:
-    main_page.open()
-    header.click_menu_button()
-    header.click_profile()
-
 @pytest.fixture(scope="session")
-def base_session(env: str, token: str) -> BaseSession:
+def base_session(env: str, auth_api_token: str) -> BaseSession:
     gateway_url = Server(env).gateway_url
-    return BaseSession(gateway_url=gateway_url, token=token)
+    return BaseSession(gateway_url=gateway_url, token=auth_api_token)
 
 @pytest.fixture(scope="session")
 def user_client(base_session: BaseSession) -> UserApiClient:
@@ -212,19 +195,7 @@ def userdata_db(envs) -> UserdataDB:
     return UserdataDB(db_url=envs.userdata_db_url)
 
 @pytest.fixture
-def category(request: FixtureRequest, category_client: CategoryApiClient, spend_db: SpendModelDB) -> Generator[CategoryModel, Any, None]:
-    category_name = request.param
-    api_current_categories = category_client.get_all_categories()
-    current_categories = {category.name: category for category in api_current_categories}
-    if category_name in current_categories:
-        added_category = current_categories[category_name]
-    else:
-        added_category = category_client.add_category(category_name=category_name)
-    yield added_category
-    spend_db.delete_category(added_category.id)
-
-@pytest.fixture
-def archive_category(
+def category(
         request: FixtureRequest,
         category_client: CategoryApiClient,
         spend_db: SpendModelDB
@@ -236,9 +207,7 @@ def archive_category(
         added_category = current_categories[category_name]
     else:
         added_category = category_client.add_category(category_name=category_name)
-    added_category.archived = True
-    archive_category = category_client.update_category(added_category)
-    yield archive_category
+    yield added_category
     spend_db.delete_category(added_category.id)
 
 @pytest.fixture
@@ -252,49 +221,6 @@ def spend(request: FixtureRequest, spend_client: SpendApiClient, spend_db: Spend
         spend_db.delete_category(spend_dict[added_spend.id].category.id)
     spend_db.delete_category(added_spend.category.id)
 
-@pytest.fixture
-def custom_date_spend(request: FixtureRequest, spend_client: SpendApiClient, spend_db: SpendModelDB) -> Generator[tuple[SpendModel, dict[str, str]], dict, None]:
-    spend_param = request.param
-    period = spend_param["spendDate"]
-    if period == "MONTH":
-        actual_date = datetime.now().replace(day=1).date().isoformat()
-        spend_param["spendDate"] = actual_date
-    if period == 'WEEK':
-        actual_date = (datetime.now() - timedelta(days=datetime.now().weekday())).date().isoformat()
-        spend_param["spendDate"] = actual_date
-    if period == 'TODAY':
-        actual_date = datetime.now().date().isoformat()
-        spend_param["spendDate"] = actual_date
-    if period == 'ALL':
-        actual_date = (datetime.now().replace(day=1) - timedelta(days=1)).date().isoformat()
-        spend_param["spendDate"] = actual_date
-    added_spend = spend_client.add_spend(SpendModelAdd(**spend_param))
-    yield added_spend, {"period": period}
-    spend_client.delete_spend([added_spend.id])
-    spend_db.delete_category(added_spend.category.id)
-
-@pytest.fixture
-def fill_spends(
-        spend_client: SpendApiClient,
-        category_client: CategoryApiClient,
-        spend_db: SpendModelDB
-) -> Generator[None, Any, None]:
-    base_dir = Path(__file__).resolve().parent
-    spends_path = base_dir.parent / 'spend_data.json'
-    with open(spends_path, 'r') as f:
-        spends = json.load(f)
-    created_spend_ids = []
-    created_category_ids = []
-    for spend_item in spends:
-        spend_model = SpendModelAdd(**spend_item)
-        added_spend = spend_client.add_spend(spend_model)
-        created_spend_ids.append(added_spend.id)
-        created_category_ids.append(added_spend.category.id)
-    yield
-    spend_client.delete_spend(created_spend_ids)
-    for category_id in created_category_ids:
-        spend_db.delete_category(category_id)
-
 class Pages:
     go_to_main_page = pytest.mark.usefixtures("go_to_main_page")
     go_to_main_page_after_spend = pytest.mark.usefixtures("go_to_main_page_after_spend")
@@ -304,15 +230,27 @@ class Pages:
 
 class TestData:
     fill_spends = pytest.mark.usefixtures("fill_spends")
-    category = lambda x: pytest.mark.parametrize("category", [x], indirect=True)
-    archive_category = lambda x: pytest.mark.parametrize("archive_category", [x], indirect=True)
-    spend = lambda x: pytest.mark.parametrize(
-        "spend",
-        [x],
-        indirect=True,
-        ids=lambda param: param.description
-    )
-    custom_date_spend = lambda x: pytest.mark.parametrize(
+
+    @staticmethod
+    def category(x: str) -> MarkDecorator:
+        return pytest.mark.parametrize("category", [x], indirect=True)
+
+    @staticmethod
+    def archive_category(x: str) -> MarkDecorator:
+        return pytest.mark.parametrize("archive_category", [x], indirect=True)
+
+    @staticmethod
+    def spend(x: SpendModelAdd) -> MarkDecorator:
+        return pytest.mark.parametrize(
+            "spend",
+            [x],
+            indirect=True,
+            ids=lambda param: param.description
+        )
+
+    @staticmethod
+    def custom_date_spend(x: SpendModelAdd) -> MarkDecorator:
+        return pytest.mark.parametrize(
         "custom_date_spend",
         [x],
         indirect=True,

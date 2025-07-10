@@ -1,5 +1,4 @@
 from typing import Sequence
-
 import allure
 from allure_commons.types import AttachmentType
 from sqlalchemy import create_engine, Engine, event
@@ -53,3 +52,10 @@ class SpendDB:
             statement = select(SpendModelDB).where(SpendModelDB.id == spend_id)
             result: ScalarResult[SpendModelDB] = session.exec(statement)
             return result.one_or_none()
+
+    @allure.step('[DB] Set spend list: spend_ids={spend_ids}')
+    def get_spend_list(self, spend_ids: list[str]) -> list[SpendModelDB]:
+        with Session(self.engine) as session:
+            statement = select(SpendModelDB).where(SpendModelDB.id.in_(spend_ids))
+            result: ScalarResult[list[SpendModelDB]] = session.exec(statement)
+            return result.all()

@@ -19,6 +19,12 @@ class SpendApiClient:
         response.raise_for_status()
         return [SpendModel.model_validate(item) for item in response.json()]
 
+    @allure.step('[API] Get spend by id: ')
+    def get_spend_by_id(self, spend_id: str) -> SpendModel:
+        response = self.session.get(f"/api/spends/{spend_id}")
+        response.raise_for_status()
+        return SpendModel.model_validate(response.json())
+
     @allure.step('[API] Add spend: spend={spend}')
     def add_spend(self, spend: SpendModelAdd) -> SpendModel:
         response = self.session.post(

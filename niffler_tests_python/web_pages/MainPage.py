@@ -1,8 +1,7 @@
 import json
-
 import allure
 from allure_commons.types import AttachmentType
-from selenium.common import NoSuchElementException
+from selenium.common import NoSuchElementException, StaleElementReferenceException
 from selenium.webdriver import Keys
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
@@ -10,6 +9,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support.wait import WebDriverWait
 from niffler_tests_python.configuration.ConfigProvider import ConfigProvider
+from niffler_tests_python.model.config import Envs
 from niffler_tests_python.web_pages.BasePage import BasePage
 from niffler_tests_python.web_pages.locators.MainPageLocators import MainPageLocators
 
@@ -18,16 +18,17 @@ class MainPage(BasePage):
 
     __url: str
 
-    def __init__(self, driver: WebDriver, config: ConfigProvider) -> None:
+    def __init__(self, driver: WebDriver, config: ConfigProvider, envs: Envs) -> None:
         super().__init__(driver, config)
         self.locator = MainPageLocators
-        self.__url = config.get_frontend_url() + "/main"
+        self.__url = envs.frontend_url + "/main"
 
     @allure.step('[UI /main] Open /main')
     def open(self) -> None:
         self._driver.get(self.__url)
         self._driver.refresh()
-        self.wait_for_visibility_element(self.locator.LOGO_IMG)
+        self.wait_for(self.locator.NIFFLER_IMG)
+
 
     @allure.step('[UI /main] Get checkbox state')
     def get_checkbox_state(self, spend_row: WebElement) -> bool:
@@ -38,7 +39,7 @@ class MainPage(BasePage):
 
     @allure.step('[UI /main] Click checkbox')
     def click_checkbox(self, spend_row: WebElement) -> None:
-        spend_row.find_element(By.CSS_SELECTOR, f'input[type="checkbox"]').click()
+        spend_row.find_element(*self.locator.CHECKBOX).click()
 
     @allure.step('[UI /main] Click select all rows')
     def click_select_all_rows(self) -> None:
@@ -47,7 +48,7 @@ class MainPage(BasePage):
     @allure.step('[UI /main] Click edit icon')
     def click_edit_spend(self, spend_row: WebElement) -> None:
         spend_row.find_element(*self.locator.EDIT_ICON).click()
-        self.wait_for_visibility_element(self.locator.AMOUNT_INPUT)
+        self.wait_for(self.locator.AMOUNT_INPUT)
 
     @allure.step('[UI /main] Click delete button')
     def click_delete_spend(self) -> None:
@@ -55,12 +56,12 @@ class MainPage(BasePage):
 
     @allure.step('[UI /main] Click submit delete button')
     def click_submit_delete_spend(self) -> None:
-        submit_popup = self.wait_for_visibility_element(self.locator.SUBMIT_POPUP)
+        submit_popup = self.wait_for(self.locator.SUBMIT_POPUP, EC.visibility_of_element_located)
         submit_popup.find_element(*self.locator.SUBMIT_DELETE_BUTTON).click()
 
     @allure.step('[UI /main] Click cancel delete button')
     def click_cancel_delete_spend(self) -> None:
-        submit_popup = self.wait_for_visibility_element(self.locator.SUBMIT_POPUP)
+        submit_popup = self.wait_for(self.locator.SUBMIT_POPUP, EC.visibility_of_element_located)
         submit_popup.find_element(*self.locator.CANCEL_DELETE_BUTTON).click()
 
     @allure.step('[UI /main] Click next page button')
@@ -69,11 +70,18 @@ class MainPage(BasePage):
 
     @allure.step('[UI /main] Click previous page button')
     def click_previous_page(self) -> None:
-        self._driver.find_element(*self.locator.PREVIOUS_PAGE_BUTTON).click()
+        try:
+            first_row = self._driver.find_element(*self.locator.CATEGORY_CELL)
+            prev_button = self.wait_for(self.locator.PREVIOUS_PAGE_BUTTON, EC.element_to_be_clickable)
+            prev_button.click()
+            self.wait_for_staleness(first_row)
+        except (StaleElementReferenceException, NoSuchElementException):
+            pass
+        self.wait_for(self.locator.CATEGORY_CELL, EC.presence_of_all_elements_located)
 
     @allure.step('[UI /main] Get alert text')
     def alert_on_action(self) -> str:
-        alert = self.wait_for_visibility_element(self.locator.ALERT_DIALOG)
+        alert = self.wait_for(self.locator.ALERT_DIALOG, EC.visibility_of_element_located)
         allure.attach(alert.text, name='Alert text', attachment_type=AttachmentType.TEXT)
         return alert.text
 
@@ -123,7 +131,7 @@ class MainPage(BasePage):
     @allure.step('[UI /main] Get spend ids from rows')
     def get_spend_ids_row(self) -> list[str]:
         spend_ids = []
-        elements = self.wait_for_visibility_elements(self.locator.CATEGORY_CELL)
+        elements = self.wait_for(self.locator.CATEGORY_CELL, EC.visibility_of_any_elements_located)
             # self.__driver.find_elements(By.CSS_SELECTOR, 'td[id^="enhanced-table-checkbox-"]'))
         for e in elements:
             spend_id = e.get_attribute("id").replace("enhanced-table-checkbox-", "")
