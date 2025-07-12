@@ -1,6 +1,8 @@
+from dataclasses import dataclass
 from selenium.webdriver.common.by import By
 
 
+@dataclass
 class MainPageLocators:
     NIFFLER_IMG = (By.CSS_SELECTOR, 'img[alt="Niffler logo"]')
     LONELY_NIFFLER_IMG = (By.CSS_SELECTOR, 'img[alt="Lonely niffler"')

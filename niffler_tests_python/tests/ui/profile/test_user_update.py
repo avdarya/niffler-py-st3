@@ -2,7 +2,7 @@ import allure
 import pytest
 from niffler_tests_python.clients.user_client import UserApiClient
 from niffler_tests_python.databases.userdata_db import UserdataDB
-from niffler_tests_python.tests.conftest import Pages
+from niffler_tests_python.utils.marks import Pages
 from niffler_tests_python.web_pages.ProfilePage import ProfilePage
 
 

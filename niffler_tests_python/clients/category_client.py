@@ -1,6 +1,7 @@
 import allure
 from niffler_tests_python.model.category import CategoryModel
-from niffler_tests_python.utils.base_session import BaseSession
+from niffler_tests_python.model.error_response import ErrorResponseModel
+from niffler_tests_python.utils.sessions import BaseSession
 
 
 class CategoryApiClient:
@@ -16,7 +17,6 @@ class CategoryApiClient:
             "/api/categories/all",
             params={"excludeArchived": exclude_archived}
         )
-        response.raise_for_status()
         return [CategoryModel.model_validate(item) for item in response.json()]
 
     @allure.step('[API] Add category: category_name={category_name}')
@@ -26,7 +26,6 @@ class CategoryApiClient:
             "/api/categories/add",
             json=payload
         )
-        response.raise_for_status()
         return CategoryModel.model_validate(response.json())
 
     @allure.step('[API] Update category: category={category}')
@@ -35,5 +34,24 @@ class CategoryApiClient:
             "/api/categories/update",
             json=category.model_dump()
         )
-        response.raise_for_status()
         return CategoryModel.model_validate(response.json())
+
+    @allure.step('[API] Add category with invalid params: category={category}')
+    def add_category_error(self, category: dict) -> ErrorResponseModel:
+        response = self.session.post(
+            "/api/categories/add",
+            json=category,
+            check_status=False
+        )
+        return ErrorResponseModel.model_validate(response.json())
+
+    @allure.step('[API] Edit category with invalid params: category={category}')
+    def update_category_error(self, category: dict) -> ErrorResponseModel:
+        response = self.session.patch(
+            "/api/categories/update",
+            json=category,
+            check_status=False
+        )
+        return ErrorResponseModel.model_validate(response.json())
+
+

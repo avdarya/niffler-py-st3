@@ -4,15 +4,16 @@ from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.remote.webdriver import WebDriver
-from niffler_tests_python.configuration.ConfigProvider import ConfigProvider
+
+from niffler_tests_python.settings.server_config import ServerConfig
 from niffler_tests_python.web_pages.BasePage import BasePage
 from niffler_tests_python.web_pages.locators.ProfilePageLocators import ProfilePageLocators
 
 
 class ProfilePage(BasePage):
 
-    def __init__(self, driver: WebDriver, config: ConfigProvider):
-        super().__init__(driver, config)
+    def __init__(self, driver: WebDriver,  server_cfg: ServerConfig):
+        super().__init__(driver, server_cfg)
         self.locator = ProfilePageLocators()
 
     @allure.step('[UI /profile] Fill add category input: category_name={category_name}')

@@ -1,9 +1,10 @@
 import allure
-from niffler_tests_python.configuration.ConfigProvider import ConfigProvider
+
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.webdriver import WebDriver
+from urllib.parse import urljoin
 
-from niffler_tests_python.model.config import Envs
+from niffler_tests_python.settings.server_config import ServerConfig
 from niffler_tests_python.web_pages.BasePage import BasePage
 from niffler_tests_python.web_pages.locators.LoginPageLocators import LoginPageLocators
 
@@ -12,9 +13,9 @@ class LoginPage(BasePage):
 
     __url: str
 
-    def __init__(self, driver: WebDriver, config: ConfigProvider, envs: Envs):
-        super().__init__(driver, config)
-        self.__url = envs.frontend_url + "/login"
+    def __init__(self, driver: WebDriver, server_cfg: ServerConfig):
+        super().__init__(driver, server_cfg)
+        self.__url = urljoin(str(server_cfg.frontend_url),'/login')
         self.locator = LoginPageLocators()
 
     @allure.step('[UI /login] Open /login')

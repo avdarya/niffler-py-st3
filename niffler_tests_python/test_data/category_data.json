@@ -1,0 +1,10 @@
+[
+  {"name": "Books"},
+  {"name": "Groceries"},
+  {"name": "Transport"},
+  {"name": "Health"},
+  {"name": "Utilities"},
+  {"name": "Entertainment"},
+  {"name": "Education"},
+  {"name": "Cinema"}
+]

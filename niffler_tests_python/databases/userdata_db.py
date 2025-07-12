@@ -1,25 +1,20 @@
 import allure
-from allure_commons.types import AttachmentType
 from sqlalchemy import Engine, create_engine, event
 from sqlalchemy.engine import ScalarResult
 from sqlmodel import Session, select
 
 from niffler_tests_python.model.userdata import UserdataModelDB
+from niffler_tests_python.settings.server_config import ServerConfig
+from niffler_tests_python.utils.allure_helpers import attach_sql
 
 
 class UserdataDB:
 
     engine: Engine
 
-    def __init__(self, db_url: str):
-        self.engine = create_engine(db_url)
-        event.listen(self.engine, 'do_execute', self.attach_sql)
-
-    @staticmethod
-    def attach_sql(cursor, statement, parameters, context):
-        statement_with_params = statement % parameters
-        name = statement.split(' ')[0] + ' ' + context.engine.url.database
-        allure.attach(statement_with_params, name, attachment_type=AttachmentType.TEXT)
+    def __init__(self, server_config: ServerConfig):
+        self.engine = create_engine(f'{server_config.userdata_db_url}')
+        event.listen(self.engine, 'do_execute', fn=attach_sql)
 
     @allure.step('[DB] Get userdata: username={username}')
     def get_userdata_by_username(self, username: str) -> UserdataModelDB:

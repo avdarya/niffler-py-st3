@@ -21,6 +21,14 @@ class SpendModelAdd(BaseModel):
     spendDate: str
     category: dict
 
+class SpendModelEdit(BaseModel):
+    id: str
+    amount: float
+    description: str
+    currency: str
+    spendDate: str
+    category: dict
+
 class SpendModelDB(SQLModel, table=True):
     __tablename__ = "spend"
 

@@ -3,15 +3,16 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
-from niffler_tests_python.configuration.ConfigProvider import ConfigProvider
+
+from niffler_tests_python.settings.server_config import ServerConfig
 from niffler_tests_python.web_pages.BasePage import BasePage
 from niffler_tests_python.web_pages.locators.SpendingPageLocators import SpendingPageLocators
 
 
 class SpendingPage(BasePage):
 
-    def __init__(self, driver: WebDriver, config: ConfigProvider):
-        super().__init__(driver, config)
+    def __init__(self, driver: WebDriver,  server_cfg: ServerConfig):
+        super().__init__(driver, server_cfg)
         self.locator = SpendingPageLocators
 
     @allure.step('[UI /spending] Clear amount input')
@@ -88,6 +89,10 @@ class SpendingPage(BasePage):
 
     @allure.step('[UI /spending] Click category: category_name={category_name}')
     def click_category(self, category_name: str) -> None:
+        self.wait_for(
+            self.locator.CURRENCY_DIALOG,
+            EC.invisibility_of_element_located
+        )
         self._driver.find_element(
             self.locator.CATEGORY_CHIP[0],
             self.locator.CATEGORY_CHIP[1].format(category_name)

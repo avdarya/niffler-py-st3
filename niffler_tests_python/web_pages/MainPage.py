@@ -8,8 +8,9 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support.wait import WebDriverWait
-from niffler_tests_python.configuration.ConfigProvider import ConfigProvider
-from niffler_tests_python.model.config import Envs
+from urllib.parse import urljoin
+
+from niffler_tests_python.settings.server_config import ServerConfig
 from niffler_tests_python.web_pages.BasePage import BasePage
 from niffler_tests_python.web_pages.locators.MainPageLocators import MainPageLocators
 
@@ -18,10 +19,10 @@ class MainPage(BasePage):
 
     __url: str
 
-    def __init__(self, driver: WebDriver, config: ConfigProvider, envs: Envs) -> None:
-        super().__init__(driver, config)
+    def __init__(self, driver: WebDriver, server_cfg: ServerConfig) -> None:
+        super().__init__(driver, server_cfg)
         self.locator = MainPageLocators
-        self.__url = envs.frontend_url + "/main"
+        self.__url = urljoin(str(server_cfg.frontend_url),'/main')
 
     @allure.step('[UI /main] Open /main')
     def open(self) -> None:
@@ -132,7 +133,6 @@ class MainPage(BasePage):
     def get_spend_ids_row(self) -> list[str]:
         spend_ids = []
         elements = self.wait_for(self.locator.CATEGORY_CELL, EC.visibility_of_any_elements_located)
-            # self.__driver.find_elements(By.CSS_SELECTOR, 'td[id^="enhanced-table-checkbox-"]'))
         for e in elements:
             spend_id = e.get_attribute("id").replace("enhanced-table-checkbox-", "")
             spend_ids.append(spend_id)

@@ -4,7 +4,7 @@ from datetime import datetime
 from niffler_tests_python.clients.spend_client import SpendApiClient
 from niffler_tests_python.databases.spend_db import SpendDB
 from niffler_tests_python.model.category import CategoryModel
-from niffler_tests_python.tests.conftest import Pages, TestData
+from niffler_tests_python.utils.marks import Pages, TestData
 from niffler_tests_python.utils.api_checkers import assert_spend_record_exists
 from niffler_tests_python.utils.helpers import wait_for_spend_row, is_text_match_spend_row
 from niffler_tests_python.web_pages.components.Header import Header
