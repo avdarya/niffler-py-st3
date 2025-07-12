@@ -1,5 +1,8 @@
+from dataclasses import dataclass
 from selenium.webdriver.common.by import By
 
+
+@dataclass
 class LoginPageLocators:
     USERNAME_INPUT = (By.CSS_SELECTOR, 'input[name="username"]')
     PASSWORD_INPUT = (By.CSS_SELECTOR, 'input[name="password"]')
