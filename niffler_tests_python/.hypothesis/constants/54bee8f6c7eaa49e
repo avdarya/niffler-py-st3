@@ -1,0 +1,4 @@
+# file: /Users/daracydenova/Desktop/AQA-python-advanced/niffler-py-st3-avdarya/niffler_tests_python/utils/sessions.py
+# hypothesis_version: 6.138.2
+
+[400, 'Accept', 'Authorization', 'Content-Type', 'Location', 'application/json', 'auth_url', 'check_status', 'code', 'gateway_url', 'token']

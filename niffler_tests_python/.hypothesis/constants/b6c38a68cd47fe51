@@ -1,0 +1,4 @@
+# file: /Users/daracydenova/Desktop/AQA-python-advanced/niffler-py-st3-avdarya/niffler_tests_python/utils/allure_helpers.py
+# hypothesis_version: 6.138.2
+
+['..', '.html', 'auth', 'body', 'cookies', 'data', 'files', 'headers', 'hooks', 'http-request.ftl', 'http-response.ftl', 'json', 'params', 'responseCode', 'templates', 'url']
