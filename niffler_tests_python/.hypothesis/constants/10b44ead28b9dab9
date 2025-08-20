@@ -1,0 +1,4 @@
+# file: /Users/daracydenova/Desktop/AQA-python-advanced/niffler-py-st3-avdarya/niffler_tests_python/web_pages/locators/SpendingPageLocators.py
+# hypothesis_version: 6.138.2
+
+['.input__helper-text', 'amount', 'button[id="save"]', 'category', 'currency', 'description', 'input[name="date"]', 'li[data-value="{}"]', 'ul[role="listbox"]']

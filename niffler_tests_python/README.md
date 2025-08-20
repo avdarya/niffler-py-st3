@@ -3,14 +3,17 @@
 ```bash
    git clone https://github.com/avdarya/niffler-py-st3.git
 ```
-2. Добавить файл .env (см файл .env_sample). Поля username, password заполнить данными для созданной заранее учетной записи 
-3. Перейти в корневой каталог проекта
+2. Перейти в корневой каталог проекта
 ```bash
-    cd niffler-py-st3
+    cd niffler-py-st3-avdarya
 ```
-4. Запустить микросервис
+3. Запустить микросервис
 ```bash
-    docker-compose-dev.sh
+    bash docker-compose-dev.sh
+```
+4. Добавить файл .env (см файл .env_sample). Поля username, password заполнить данными для созданной заранее учетной записи
+```bash
+    cp .env_sample .env
 ```
 5. Перейти в дирректорию с тестами
 ```bash

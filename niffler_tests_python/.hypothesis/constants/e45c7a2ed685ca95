@@ -1,0 +1,4 @@
+# file: /Users/daracydenova/Desktop/AQA-python-advanced/niffler-py-st3-avdarya/niffler_tests_python/web_pages/MainPage.py
+# hypothesis_version: 6.138.2
+
+['/main', 'Alert text', 'Checkbox State', 'Search input text', 'Selected spend ids', 'Spend ids', 'aria-checked', 'class', 'disabled', 'id', 'true', 'value']

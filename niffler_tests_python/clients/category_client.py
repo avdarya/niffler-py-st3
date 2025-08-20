@@ -13,10 +13,12 @@ class CategoryApiClient:
 
     @allure.step('[API] Get all categories: exclude_archived={exclude_archived}')
     def get_all_categories(self, exclude_archived: bool = False) -> list[CategoryModel]:
+        print('\n')
         response = self.session.get(
             "/api/categories/all",
             params={"excludeArchived": exclude_archived}
         )
+        print(response)
         return [CategoryModel.model_validate(item) for item in response.json()]
 
     @allure.step('[API] Add category: category_name={category_name}')

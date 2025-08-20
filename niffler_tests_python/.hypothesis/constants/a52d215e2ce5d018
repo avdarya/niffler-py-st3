@@ -1,0 +1,4 @@
+# file: /Users/daracydenova/Desktop/AQA-python-advanced/niffler-py-st3-avdarya/niffler_tests_python/web_pages/locators/MainPageLocators.py
+# hypothesis_version: 6.138.2
+
+['./ancestor::tr', 'amount', 'currency', 'delete', 'div[role="alert"]', 'input[name="period"]', 'li[data-value="{}"]', 'page-next', 'page-prev', 'period', 'tr.MuiTableRow-root']
