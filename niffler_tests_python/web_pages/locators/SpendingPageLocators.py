@@ -1,6 +1,8 @@
+from dataclasses import dataclass
 from selenium.webdriver.common.by import By
 
 
+@dataclass
 class SpendingPageLocators:
     AMOUNT_INPUT = (By.ID, 'amount')
     AMOUNT_FIELD = (By.XPATH, './/input[@id="amount"]/parent::div')

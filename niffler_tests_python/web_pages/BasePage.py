@@ -3,7 +3,8 @@ from selenium.webdriver.ie.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from niffler_tests_python.configuration.ConfigProvider import ConfigProvider
+
+from niffler_tests_python.settings.server_config import ServerConfig
 
 Locator = Tuple[str, str]
 Condition = Callable[[Locator], Callable[[WebDriver], object]]
@@ -14,10 +15,10 @@ class BasePage:
     _timeout: float
     _poll: float
 
-    def __init__(self, driver: WebDriver, config: ConfigProvider):
+    def __init__(self, driver: WebDriver, server_cfg: ServerConfig):
         self._driver = driver
-        self._timeout = config.get_timeout()
-        self._poll = config.get_poll()
+        self._timeout = server_cfg.timeout
+        self._poll = server_cfg.poll
 
     def wait_for(
             self,

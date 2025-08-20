@@ -1,7 +1,7 @@
 import allure
 import pytest
 from niffler_tests_python.clients.category_client import CategoryApiClient
-from niffler_tests_python.tests.conftest import Pages
+from niffler_tests_python.utils.marks import Pages
 from niffler_tests_python.web_pages.components.Header import Header
 from niffler_tests_python.web_pages.MainPage import MainPage
 from niffler_tests_python.web_pages.ProfilePage import ProfilePage

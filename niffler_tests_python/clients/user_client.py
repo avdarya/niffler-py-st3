@@ -1,6 +1,6 @@
 import allure
 from niffler_tests_python.model.userdata import UserdataModel, UserdataModelUpdate
-from niffler_tests_python.utils.base_session import BaseSession
+from niffler_tests_python.utils.sessions import BaseSession
 
 
 class UserApiClient:
@@ -13,7 +13,6 @@ class UserApiClient:
     @allure.step('[API] Get current user')
     def get_current_user(self) -> UserdataModel:
         response = self.session.get("/api/users/current")
-        response.raise_for_status()
         return UserdataModel.model_validate(response.json())
 
     @allure.step('[API] Update user: userdata={userdata}')
@@ -22,5 +21,4 @@ class UserApiClient:
             "/api/users/update",
             json=userdata.model_dump(),
         )
-        response.raise_for_status()
         return UserdataModel.model_validate(response.json())

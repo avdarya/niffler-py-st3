@@ -1,6 +1,8 @@
+from dataclasses import dataclass
 from selenium.webdriver.common.by import By
 
 
+@dataclass
 class ProfilePageLocators:
     FULLNAME_INTPUT = (By.ID, 'name')
     ADD_CATEGORY_INPUT = (By.CSS_SELECTOR, 'input[placeholder="Add new category"]')

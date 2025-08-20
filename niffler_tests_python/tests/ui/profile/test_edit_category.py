@@ -4,7 +4,7 @@ import pytest
 from niffler_tests_python.clients.category_client import CategoryApiClient
 from niffler_tests_python.databases.spend_db import SpendDB
 from niffler_tests_python.model.category import CategoryModel
-from niffler_tests_python.tests.conftest import Pages, TestData
+from niffler_tests_python.utils.marks import Pages, TestData
 from niffler_tests_python.utils.helpers import wait_for_category_update_name
 from niffler_tests_python.web_pages.ProfilePage import ProfilePage
 
