@@ -11,6 +11,8 @@ class ServerConfig(BaseSettings):
     spend_db_url: PostgresDsn
     userdata_db_url: PostgresDsn
 
+    kafka_address: str
+
     timeout: PositiveFloat = 5.0
     poll: PositiveFloat = 0.5
     browser_name: Literal['chrome', 'firefox'] = 'chrome'

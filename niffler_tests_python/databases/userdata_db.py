@@ -21,4 +21,4 @@ class UserdataDB:
         with Session(self.engine) as session:
             statement = select(UserdataModelDB).where(UserdataModelDB.username == username)
             result: ScalarResult[UserdataModelDB] = session.exec(statement)
-            return result.one()
+            return result.one_or_none()

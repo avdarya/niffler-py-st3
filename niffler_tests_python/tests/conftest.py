@@ -2,7 +2,7 @@ import datetime
 
 import allure
 import pytest
-from typing import Callable
+from typing import Callable, Any, Generator
 from collections.abc import Generator
 
 from allure_commons.reporter import AllureReporter
@@ -12,6 +12,7 @@ from selenium import webdriver
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 
+from niffler_tests_python.clients.kafka_client import KafkaClient
 from niffler_tests_python.settings.client_config import ClientConfig
 from niffler_tests_python.settings.server_config import ServerConfig
 from niffler_tests_python.web_pages.LoginPage import LoginPage
@@ -113,3 +114,9 @@ def make_future_date() -> Callable[[int], str]:
         ft_date = datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=days)
         return ft_date.replace(hour=21, minute=0, second=0, microsecond=0).isoformat(timespec='milliseconds').replace('+00:00', 'Z')
     return _make
+
+@pytest.fixture(scope='session')
+def kafka(server_cfg: ServerConfig) -> Generator[KafkaClient, Any, None]:
+    """Взаимодействие с Kafka"""
+    with KafkaClient(server_cfg) as k:
+        yield k
