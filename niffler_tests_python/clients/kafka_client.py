@@ -61,8 +61,12 @@ class KafkaClient:
             topic=topic,
             key=key.encode('utf-8') if key else None,
             value=value,
-            headers=[('__TypeId__', b'com.niffler.userdata.dto.UserRegisteredEvent')]
+            headers=[('__TypeId__', b'guru.qa.niffler.model.UserJson')]
         )
+        # b'guru.qa.niffler.model.UserJson'
+        # "guru.qa.niffler.model.UserJson"
+        # headers = [('__TypeId__', b'com.niffler.userdata.dto.UserRegisteredEvent')]
+
         self.producer.flush()
 
     @wait_until_timeout
