@@ -1,6 +1,8 @@
 from typing import Optional
 from pydantic import BaseModel
-from sqlmodel import SQLModel, Field
+from sqlmodel import Field
+
+from niffler_tests_python.model._bases import UserdataDBBase
 
 
 class UserdataModel(BaseModel):
@@ -18,7 +20,7 @@ class UserdataModelUpdate(BaseModel):
     fullname: str | None
     photo: str | None
 
-class UserdataModelDB(SQLModel, table=True):
+class UserdataModelDB(UserdataDBBase, table=True):
     __tablename__ = "user"
 
     id: str = Field(default=None, primary_key=True)

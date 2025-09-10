@@ -10,12 +10,14 @@ class ServerConfig(BaseSettings):
 
     spend_db_url: PostgresDsn
     userdata_db_url: PostgresDsn
+    auth_db_url: PostgresDsn
 
     kafka_address: str
 
     timeout: PositiveFloat = 5.0
     poll: PositiveFloat = 0.5
-    browser_name: Literal['chrome', 'firefox'] = 'chrome'
+    browser_name: Literal['chromium', 'firefox', 'webkit'] = 'chromium'
+    headed: bool = True
 
     model_config = SettingsConfigDict(
         env_file='.env',

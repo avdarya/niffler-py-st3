@@ -1,6 +1,7 @@
 from time import sleep
 
 import pytest
+from playwright.sync_api import Page
 
 from selenium.webdriver.remote.webdriver import WebDriver
 
@@ -10,17 +11,26 @@ from niffler_tests_python.settings.server_config import ServerConfig
 from niffler_tests_python.web_pages.LoginPage import LoginPage
 from niffler_tests_python.web_pages.MainPage import MainPage
 from niffler_tests_python.web_pages.ProfilePage import ProfilePage
+from niffler_tests_python.web_pages.RegisterPage import RegisterPage
 from niffler_tests_python.web_pages.SpendingPage import SpendingPage
 from niffler_tests_python.web_pages.components.Header import Header
 
 
-@pytest.fixture(scope='session')
-def login_page(browser: WebDriver, server_cfg: ServerConfig) -> LoginPage:
-    return LoginPage(driver=browser, server_cfg=server_cfg)
+@pytest.fixture
+def register_page(page_not_authed: Page, server_cfg: ServerConfig) -> RegisterPage:
+    return RegisterPage(page_not_authed, server_cfg)
 
 @pytest.fixture(scope='session')
-def main_page(auth_browser: WebDriver, server_cfg: ServerConfig) -> MainPage:
-    return MainPage(driver=auth_browser, server_cfg=server_cfg)
+def login_page(page_not_authed: Page, server_cfg: ServerConfig) -> LoginPage:
+    return LoginPage(page_not_authed, server_cfg)
+
+# @pytest.fixture(scope='session')
+# def main_page(..: Page, server_cfg: ServerConfig) -> MainPage:
+#     return MainPage(page, server_cfg)
+
+@pytest.fixture(scope='session')
+def main_page_guest(page_not_authed: Page, server_cfg: ServerConfig) -> MainPage:
+    return MainPage(page_not_authed, server_cfg)
 
 @pytest.fixture(scope='session')
 def spending_page(auth_browser: WebDriver, server_cfg: ServerConfig) -> SpendingPage:

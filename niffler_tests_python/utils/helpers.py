@@ -1,4 +1,5 @@
 import time
+import base64, json
 from datetime import datetime
 from typing import Callable
 from selenium.webdriver.remote.webelement import WebElement
@@ -107,3 +108,11 @@ def get_category_by_name(category_name: str, category_client: CategoryApiClient)
         if category.name == category_name:
             return category
     raise AssertionError(f"Category with name {category_name} not found")
+
+def decode_jwt_payload(token_payload_part: str) -> dict:
+    try:
+        token_payload_part += '=' * (-len(token_payload_part) % 4)
+        decoded_payload =base64.urlsafe_b64decode(token_payload_part)
+        return json.loads(decoded_payload)
+    except ValueError:
+        raise ValueError('Invalid JWT format')

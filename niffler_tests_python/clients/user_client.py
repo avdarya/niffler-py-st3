@@ -1,5 +1,5 @@
 import allure
-from niffler_tests_python.model.userdata import UserdataModel, UserdataModelUpdate
+from niffler_tests_python.model.userdata_db import UserdataModel, UserdataModelUpdate
 from niffler_tests_python.utils.sessions import BaseSession
 
 

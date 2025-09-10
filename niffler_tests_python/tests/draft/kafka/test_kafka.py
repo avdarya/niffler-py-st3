@@ -8,7 +8,7 @@ from faker import Faker
 from niffler_tests_python.clients.kafka_client import KafkaClient
 from niffler_tests_python.clients.oauth_client import OAuthClient
 from niffler_tests_python.databases.userdata_db import UserdataDB
-from niffler_tests_python.model.userdata import UserdataModelDB, UserName
+from niffler_tests_python.model.userdata_db import UserdataModelDB, UserName
 from niffler_tests_python.utils.waiters import wait_until_timeout
 
 
