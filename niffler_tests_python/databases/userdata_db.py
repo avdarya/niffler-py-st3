@@ -1,3 +1,5 @@
+from typing import Sequence
+
 import allure
 from sqlalchemy import Engine, create_engine, event
 from sqlalchemy.engine import ScalarResult
@@ -21,4 +23,11 @@ class UserdataDB:
         with Session(self.engine) as session:
             statement = select(UserdataModelDB).where(UserdataModelDB.username == username)
             result: ScalarResult[UserdataModelDB] = session.exec(statement)
-            return result.one()
+            return result.one_or_none()
+
+    @allure.step('[DB] Get userdata: username={username}')
+    def get_all_records_by_username(self, username: str) -> Sequence[UserdataModelDB]:
+        with Session(self.engine) as session:
+            statement = select(UserdataModelDB).where(UserdataModelDB.username == username)
+            result: ScalarResult[UserdataModelDB] = session.exec(statement)
+            return result.all()

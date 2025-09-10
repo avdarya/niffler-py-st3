@@ -9,6 +9,9 @@ class UserdataModel(BaseModel):
     fullname: str
     currency: str
 
+class UserName(BaseModel):
+    username: str
+
 class UserdataModelUpdate(BaseModel):
     id: str | None
     username: str | None
