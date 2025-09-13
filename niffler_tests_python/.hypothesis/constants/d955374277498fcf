@@ -1,0 +1,4 @@
+# file: /Users/daracydenova/Desktop/AQA-python-advanced/niffler-py-st3-avdarya/niffler_tests_python/utils/marks.py
+# hypothesis_version: 6.138.2
+
+['archive_category', 'category', 'custom_date_spend', 'fill_categories', 'fill_spends', 'go_to_main_page', 'go_to_profile_page', 'spend', 'two_categories']

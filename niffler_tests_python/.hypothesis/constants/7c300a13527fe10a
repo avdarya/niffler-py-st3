@@ -1,0 +1,4 @@
+# file: /Users/daracydenova/Desktop/AQA-python-advanced/niffler-py-st3-avdarya/niffler_tests_python/clients/kafka_client.py
+# hypothesis_version: 6.138.2
+
+[b'guru.qa.niffler.model.UserJson', 1.0, '__TypeId__', 'auto.offset.reset', 'bootstrap.servers', 'client.id', 'enable.auto.commit', 'group.id', 'latest', 'no topics in kafka', 'tester', 'utf-8']

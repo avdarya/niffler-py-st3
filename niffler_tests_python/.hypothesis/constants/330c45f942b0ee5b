@@ -1,0 +1,4 @@
+# file: /Users/daracydenova/Desktop/AQA-python-advanced/niffler-py-st3-avdarya/niffler_tests_python/clients/oauth_client.py
+# hypothesis_version: 6.138.2
+
+['/authorized', '/login', '/oauth2/authorize', '/oauth2/token', '/register', 'XSRF-TOKEN', '_csrf', 'access_token', 'authorization_code', 'client', 'client_id', 'code', 'code_verifier', 'grant_type', 'password', 'passwordSubmit', 'redirect_uri', 'username']
