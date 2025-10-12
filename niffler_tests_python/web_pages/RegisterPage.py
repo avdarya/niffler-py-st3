@@ -10,13 +10,16 @@ class RegisterPage(BasePage):
 
     __url: str
 
-    def __init__(self, page: Page, server_config: ServerConfig) -> None:
-        super().__init__(page, server_config)
+    def __init__(self, page: Page, server_cfg: ServerConfig) -> None:
+        super().__init__(page, server_cfg)
         self.locators = RegisterPageLocators
-        self.__url = urljoin(str(server_config.auth_url),'/register')
+        self.__url = urljoin(str(server_cfg.auth_url),'/register')
 
     def navigate(self):
         self._page.goto(self.__url)
+
+    def expected_url(self):
+        expect(self._page).to_have_url(self.__url)
 
     def fill_username(self, username: str) -> None:
         self.locators.username_input(self._page).type(username)
@@ -35,9 +38,6 @@ class RegisterPage(BasePage):
 
     def toggle_password_visibility(self) -> None:
         self.locators.toggle_password_visibility(self._page).click()
-
-    def is_correct_url(self):
-        expect(self._page).to_have_url(self.__url)
 
     def expect_password_hidden(self) -> None:
         expect(self.locators.password_input(self._page)).to_have_attribute('type', 'password')

@@ -13,6 +13,7 @@ class ServerConfig(BaseSettings):
     auth_db_url: PostgresDsn
 
     kafka_address: str
+    soap_url: HttpUrl
 
     timeout: PositiveFloat = 5.0
     poll: PositiveFloat = 0.5

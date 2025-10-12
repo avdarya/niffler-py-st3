@@ -1,0 +1,17 @@
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+    <SOAP-ENV:Header/>
+    <SOAP-ENV:Body>
+        <ns2:usersResponse xmlns:ns2="niffler-userdata">
+            <ns2:user>
+                <ns2:id>96f44033-ade5-4c99-a3a8-9a5a3da3db84</ns2:id>
+                <ns2:username>test12</ns2:username>
+                <ns2:currency>RUB</ns2:currency>
+                <ns2:friendshipStatus>FRIEND</ns2:friendshipStatus>
+            </ns2:user>
+            <ns2:size>10</ns2:size>
+            <ns2:number>0</ns2:number>
+            <ns2:totalElements>1</ns2:totalElements>
+            <ns2:totalPages>1</ns2:totalPages>
+        </ns2:usersResponse>
+    </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

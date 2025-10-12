@@ -21,7 +21,9 @@ def allure_attach_request(function):
 
     def wrapper(*args, **kwargs):
         self_ = args[0]
-        method, url = args[1], args[2]
+        # method, url = args[1], args[2]
+        method = kwargs.get('method') or (len(args) > 1 and args[1]) or 'UNKNOWN'
+        url = kwargs.get('path') or (len(args) > 2 and args[2]) or ''
 
         # with jinja2 -->
         headers = kwargs.get('headers', None)
@@ -34,7 +36,7 @@ def allure_attach_request(function):
         json_ = kwargs.get('json', None)
         request = Request(
             method=method.upper(),
-            url=f'{getattr(self_, "gateway_url", getattr(self_, "auth_url", ""))}' + url,
+            url=f'{getattr(self_, "gateway_url", getattr(self_, "auth_url", getattr(self_, "soap_url", "")))}' + url,
             headers=headers,
             files=files,
             data=data or {},

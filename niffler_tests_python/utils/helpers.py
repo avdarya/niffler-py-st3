@@ -2,6 +2,8 @@ import time
 import base64, json
 from datetime import datetime
 from typing import Callable
+
+from playwright.sync_api import Locator
 from selenium.webdriver.remote.webelement import WebElement
 from niffler_tests_python.clients.category_client import CategoryApiClient
 from niffler_tests_python.model.category import CategoryModel
@@ -80,10 +82,10 @@ def is_text_match_spend_row(
     else:
         return False
 
-def wait_for_spend_row(main_page: MainPage, spend_id: str, timeout=10, interval=0.5) -> WebElement:
+def wait_for_spend_row(main_page: MainPage, spend_id: str, timeout=10, interval=0.5) -> Locator:
     end_time = time.time() + timeout
     while time.time() < end_time:
-        spend_row = main_page.get_spend_row(spend_id)
+        spend_row = main_page.get_spend_row_by_id(spend_id)
         if spend_row is not None:
             return spend_row
         time.sleep(interval)

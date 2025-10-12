@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+           xmlns:xml="http://www.w3.org/XML/1998/namespace"
+           targetNamespace="http://schemas.xmlsoap.org/soap/envelope/"
+           elementFormDefault="qualified">
+
+  <xs:import namespace="http://www.w3.org/XML/1998/namespace"/>
+
+  <xs:element name="Envelope">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="SOAP-ENV:Header" minOccurs="0"/>
+        <xs:element ref="SOAP-ENV:Body"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="Header" type="xs:anyType"/>
+  <xs:element name="Body">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="SOAP-ENV:Fault"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="Fault">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="faultcode" type="xs:string" form="unqualified"/>
+        <xs:element name="faultstring" form="unqualified">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="xs:string">
+                <xs:attribute ref="xml:lang" use="optional"/>
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

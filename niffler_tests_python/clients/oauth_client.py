@@ -64,7 +64,6 @@ class OAuthClient:
                 'client_id': 'client'
             }
         )
-
         self.token = token_response.json().get('access_token', None)
         return self.token
 

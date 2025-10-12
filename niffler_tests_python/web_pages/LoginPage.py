@@ -43,11 +43,14 @@ class LoginPage(BasePage):
 
     def __init__(self, page: Page, server_cfg: ServerConfig):
         super().__init__(page, server_cfg)
-        self.__url = urljoin(str(server_cfg.auth_url),'/login')
+        self.__url = urljoin( str(server_cfg.auth_url),'/login')
         self.locators = LoginPageLocators
 
     def navigate(self):
         self._page.goto(self.__url)
+
+    def expected_url(self):
+        expect(self._page).to_have_url(self.__url)
 
     def fill_username(self, username: str) -> None:
         self.locators.username_input(self._page).type(username)
@@ -60,9 +63,6 @@ class LoginPage(BasePage):
 
     def click_create_new_account(self) -> None:
         self.locators.create_new_account_button(self._page).click()
-
-    def is_correct_url(self):
-        expect(self._page).to_have_url(self.__url)
 
     def is_correct_error_url(self):
         expect(self._page).to_have_url(f'{self.__url}?error')

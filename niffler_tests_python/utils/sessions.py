@@ -65,3 +65,17 @@ class AuthSession(Session):
                 self.code = code
 
         return response
+
+class SoapSession(Session):
+
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__()
+        self.soap_url = kwargs.pop("soap_url", None)
+        self.headers.update({
+            'Content-Type': 'text/xml; charset=utf-8'
+        })
+
+    @raise_for_status
+    @allure_attach_request
+    def request(self, method: str, path: str = '', **kwargs) -> Response:
+        return super().request(method, urljoin(str(self.soap_url), path), **kwargs)

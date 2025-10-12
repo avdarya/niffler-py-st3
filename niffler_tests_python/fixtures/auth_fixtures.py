@@ -9,7 +9,18 @@ from niffler_tests_python.settings.server_config import ServerConfig
 def auth_client(server_cfg: ServerConfig) -> OAuthClient:
     return OAuthClient(server_cfg)
 
-@pytest.fixture(scope="session")
-def auth_token(auth_client: OAuthClient, client_cfg: ClientConfig) -> str:
-    return auth_client.access_token(client_cfg.username, client_cfg.password.get_secret_value())
+# @pytest.fixture
+# def auth_token(auth_client: OAuthClient, username: str, password: str) -> str:
+#     return auth_client.access_token(username, password)
 
+
+@pytest.fixture(scope="session")
+def auth_token_factory(auth_client: OAuthClient):
+    def _make(username: str, password: str) -> str:
+        return auth_client.access_token(username, password)
+    return _make
+
+# @pytest.fixture
+# def token(server_cfg: ServerConfig, username: str, password: str) -> str:
+#     auth_client = OAuthClient(server_cfg)
+#     return auth_client.access_token(username, password)

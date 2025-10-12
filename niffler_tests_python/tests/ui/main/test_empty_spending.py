@@ -1,0 +1,1 @@
+def test_empty_spending(user_without_spending):

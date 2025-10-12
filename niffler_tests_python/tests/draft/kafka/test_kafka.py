@@ -7,8 +7,8 @@ from faker import Faker
 
 from niffler_tests_python.clients.kafka_client import KafkaClient
 from niffler_tests_python.clients.oauth_client import OAuthClient
-from niffler_tests_python.databases.userdata_db import UserdataDB
-from niffler_tests_python.model.userdata_db import UserdataModelDB, UserName
+from niffler_tests_python.databases.user_db import UserDB
+from niffler_tests_python.model.userdata import UserModelDB, UserName
 from niffler_tests_python.utils.waiters import wait_until_timeout
 
 
@@ -22,7 +22,7 @@ class TestAuthRegistrationKafkaTest:
             self,
             auth_client: OAuthClient,
             kafka: KafkaClient,
-            userdata_db: UserdataDB
+            user_db: UserDB
     ):
         username = Faker().user_name()
         password = Faker().password(special_chars=False)
@@ -49,13 +49,13 @@ class TestAuthRegistrationKafkaTest:
             self,
             auth_client: OAuthClient,
             kafka: KafkaClient,
-            userdata_db: UserdataDB
+            user_db: UserDB
     ):
         username = Faker().user_name()
 
         kafka.produce_message('users', {'username': username})
 
-        user_from_db = wait_until_timeout(userdata_db.get_userdata_by_username)(username)
+        user_from_db = wait_until_timeout(user_db.get_userdata_by_username)(username)
 
         with step("Check that username from DB matches produced Kafka message"):
             assert user_from_db.username == username
@@ -71,15 +71,15 @@ class TestAuthRegistrationKafkaTest:
             user_count: int,
             auth_client: OAuthClient,
             kafka: KafkaClient,
-            userdata_db: UserdataDB
+            user_db: UserDB
     ):
-        all_users_db: List[UserdataModelDB] = []
+        all_users_db: List[UserModelDB] = []
         added_username: List[str] = []
         for _ in range(user_count):
             username = Faker().user_name()
             added_username.append(username)
             kafka.produce_message('users', {'username': username})
-            user_from_db = wait_until_timeout(userdata_db.get_userdata_by_username)(username)
+            user_from_db = wait_until_timeout(user_db.get_userdata_by_username)(username)
             all_users_db.append(user_from_db)
 
         with step("Check that number of records in DB equals number of produced Kafka message"):
@@ -95,14 +95,14 @@ class TestAuthRegistrationKafkaTest:
             self,
             auth_client: OAuthClient,
             kafka: KafkaClient,
-            userdata_db: UserdataDB
+            user_db: UserDB
     ):
         username = Faker().user_name()
         kafka.produce_message('users', {'username': username})
-        wait_until_timeout(userdata_db.get_userdata_by_username)(username)
+        wait_until_timeout(user_db.get_userdata_by_username)(username)
 
         kafka.produce_message('users', {'username': username})
-        user_from_db = userdata_db.get_all_records_by_username(username)
+        user_from_db = user_db.get_all_records_by_username(username)
 
         with step("Check that duplicate Kafka message does not create duplicate user record in DB"):
             assert len(user_from_db) == 1

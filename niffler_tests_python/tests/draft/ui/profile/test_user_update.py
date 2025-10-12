@@ -1,7 +1,7 @@
 import allure
 import pytest
 from niffler_tests_python.clients.user_client import UserApiClient
-from niffler_tests_python.databases.userdata_db import UserdataDB
+from niffler_tests_python.databases.user_db import UserDB
 from niffler_tests_python.utils.marks import Pages
 from niffler_tests_python.web_pages.ProfilePage import ProfilePage
 
@@ -14,7 +14,7 @@ from niffler_tests_python.web_pages.ProfilePage import ProfilePage
 def  test_update_name(
         profile_page: ProfilePage,
         user_client: UserApiClient,
-        userdata_db: UserdataDB,
+        user_db: UserDB,
         fullname
 ):
     with allure.step('Enter fullname'):
@@ -31,7 +31,7 @@ def  test_update_name(
         api_user = user_client.get_current_user()
 
     with allure.step('Retrieve userdata from DB'):
-        db_userdata = userdata_db.get_userdata_by_username(api_user.username)
+        db_userdata = user_db.get_userdata_by_username(api_user.username)
 
     with allure.step('Assert update name'):
         with allure.step('Verify alert text'):

@@ -1,6 +1,6 @@
 from typing import Tuple, Callable
 
-from playwright.sync_api import Page
+from playwright.sync_api import Page, expect
 from selenium.webdriver.ie.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.wait import WebDriverWait
@@ -50,8 +50,8 @@ from niffler_tests_python.settings.server_config import ServerConfig
 #         ).until(EC.staleness_of(element))
 
 
-Locator = Tuple[str, str]
-Condition = Callable[[Locator], Callable[[WebDriver], object]]
+# Locator = Tuple[str, str]
+# Condition = Callable[[Locator], Callable[[WebDriver], object]]
 
 class BasePage:
 
@@ -87,4 +87,5 @@ class BasePage:
     #         driver = self._driver,
     #         timeout=timeout or self._timeout,
     #         poll_frequency=poll or self._poll
-    #     ).until(EC.staleness_of(element))
+    #     ).until(EC.staleness_of(element))\
+

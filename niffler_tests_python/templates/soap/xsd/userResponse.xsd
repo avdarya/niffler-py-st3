@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="niffler-userdata" xmlns:ns2="niffler-userdata" xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+    <xs:import namespace="http://schemas.xmlsoap.org/soap/envelope/" schemaLocation="envelope.xsd"/>
+    <xs:element name="userResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="ns2:user"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="user">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="id" minOccurs="0"/>
+                <xs:element ref="ns2:username"/>
+                <xs:element ref="ns2:fullname" minOccurs="0"/>
+                <xs:element ref="ns2:currency"/>
+                <xs:element ref="ns2:friendshipStatus"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="id" type="xs:string"/>
+    <xs:element name="username" type="xs:NCName"/>
+    <xs:element name="fullname" type="xs:NCName"/>
+    <xs:element name="currency" type="xs:NCName"/>
+    <xs:element name="friendshipStatus" type="xs:NCName"/>
+</xs:schema>
