@@ -14,6 +14,7 @@ class ServerConfig(BaseSettings):
 
     kafka_address: str
     soap_url: HttpUrl
+    graphql_url: HttpUrl
 
     timeout: PositiveFloat = 5.0
     poll: PositiveFloat = 0.5

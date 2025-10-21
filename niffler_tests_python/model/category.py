@@ -7,6 +7,12 @@ class CategoryModel(BaseModel):
     username: str
     archived: bool
 
+class CategoryGqlModel(BaseModel):
+    id: str
+    name: str
+    username: str
+    archived: bool
+
 class CategoryModelDB(SQLModel, table=True):
     __tablename__ = "category"
 

@@ -1,0 +1,4 @@
+# file: /Users/daracydenova/Desktop/AQA-python-advanced/niffler-py-st3-avdarya/niffler_tests_python/utils/helpers.py
+# hypothesis_version: 6.138.2
+
+[0.0, 0.5, '$', '%b %d, %Y', '%m/%d/%Y', '=', 'Archived', 'EUR', 'Invalid JWT format', 'KZT', 'RUB', 'USD', 'category_name', 'currency', 'first_spend_date', 'is_contains_archived', 'last_spend_date', 'sum', '€', '₸', '₽']

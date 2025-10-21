@@ -19,6 +19,7 @@ class Pages:
 class TestData:
     fill_spends = pytest.mark.usefixtures("fill_spends")
     fill_categories = pytest.mark.usefixtures("fill_categories")
+    filled_spends_contains_archived_category = pytest.mark.usefixtures("filled_spends_contains_archived_category")
 
     @staticmethod
     def category(x: str) -> MarkDecorator:

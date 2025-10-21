@@ -85,6 +85,10 @@ class MainPageLocators:
         return page.get_by_role('checkbox', name='select all rows')
 
     @staticmethod
+    def first_category_cell() -> str:
+        return "tbody tr.MuiTableRow-root td[id^='enhanced-table-checkbox-']"
+
+    @staticmethod
     def category_cell(row: Locator) -> Locator:
         return row.locator('td[id^="enhanced-table-checkbox-"]')
 

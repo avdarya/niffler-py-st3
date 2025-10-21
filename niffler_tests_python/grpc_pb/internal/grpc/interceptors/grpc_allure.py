@@ -33,4 +33,3 @@ class GRPCAllureInterceptor(grpc.UnaryUnaryClientInterceptor):
                     attachment_type=allure.attachment_type.TEXT
                 )
             return response
-

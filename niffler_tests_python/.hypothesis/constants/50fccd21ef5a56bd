@@ -1,0 +1,4 @@
+# file: /Users/daracydenova/Desktop/AQA-python-advanced/niffler-py-st3-avdarya/niffler_tests_python/web_pages/locators/RegisterPageLocators.py
+# hypothesis_version: 6.138.2
+
+['#passwordBtn', 'Sign Up', 'Sign in', 'Sign up', 'Submit your password', 'Type your password', 'Type your username', 'button', 'heading', 'link']

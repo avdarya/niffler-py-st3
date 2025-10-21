@@ -1,6 +1,7 @@
 import pytest
 
 from niffler_tests_python.clients.category_client import CategoryApiClient
+from niffler_tests_python.clients.graphql_client import GraphQLClient
 from niffler_tests_python.clients.spend_client import SpendApiClient
 from niffler_tests_python.clients.user_client import UserApiClient
 from niffler_tests_python.databases.auth_db import AuthDB
@@ -8,10 +9,10 @@ from niffler_tests_python.databases.friendship_db import FriendshipDB
 from niffler_tests_python.databases.spend_db import SpendDB
 from niffler_tests_python.databases.user_db import UserDB
 from niffler_tests_python.settings.server_config import ServerConfig
-from niffler_tests_python.utils.sessions import BaseSession, SoapSession
+from niffler_tests_python.utils.sessions import BaseSession, SoapSession, GraphqlSession
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def base_session(
         server_cfg: ServerConfig,
         user: tuple[str, str],
@@ -25,17 +26,32 @@ def base_session(
 def soap_session(server_cfg: ServerConfig) -> SoapSession:
     return SoapSession(soap_url=server_cfg.soap_url)
 
-@pytest.fixture(scope="session")
-def user_client(base_session: BaseSession) -> UserApiClient:
-    return UserApiClient(session=base_session)
+@pytest.fixture
+def graphql_session(
+        server_cfg: ServerConfig,
+        user: tuple[str, str],
+        auth_token_factory
+) -> GraphqlSession:
+    username, password = user
+    token = auth_token_factory(username, password)
+    return GraphqlSession(graphql_url=server_cfg.graphql_url, token=token)
 
-@pytest.fixture(scope="session")
+@pytest.fixture
+def user_client(base_session: BaseSession) -> UserApiClient:
+    client = UserApiClient(session=base_session)
+    return client
+
+@pytest.fixture
 def category_client(base_session: BaseSession) -> CategoryApiClient:
     return CategoryApiClient(session=base_session)
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def spend_client(base_session: BaseSession) -> SpendApiClient:
     return SpendApiClient(session=base_session)
+
+@pytest.fixture
+def graphql_client(graphql_session: GraphqlSession) -> GraphQLClient:
+    return GraphQLClient(session=graphql_session)
 
 @pytest.fixture(scope="session")
 def spend_db(server_cfg: ServerConfig) -> SpendDB:

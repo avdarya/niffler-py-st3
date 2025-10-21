@@ -4,9 +4,12 @@ from datetime import datetime
 from typing import Callable
 
 from playwright.sync_api import Locator
-from selenium.webdriver.remote.webelement import WebElement
 from niffler_tests_python.clients.category_client import CategoryApiClient
+from niffler_tests_python.clients.spend_client import SpendApiClient
 from niffler_tests_python.model.category import CategoryModel
+from niffler_tests_python.model.enums.currency_title import CurrencyTitle
+from niffler_tests_python.model.spend import SpendModelDB
+from niffler_tests_python.model.stat import StatByCategoryGqlResponse
 from niffler_tests_python.web_pages.MainPage import MainPage
 
 
@@ -118,3 +121,51 @@ def decode_jwt_payload(token_payload_part: str) -> dict:
         return json.loads(decoded_payload)
     except ValueError:
         raise ValueError('Invalid JWT format')
+
+def calc_total_stat_by_currency(
+        spends: list[SpendModelDB],
+        stat_currency: str,
+        spend_api_client: SpendApiClient
+) -> float:
+    total = 0.0
+    all_currencies = spend_api_client.get_all_currencies()
+    currency_by_rate = {currency.currency: currency.currencyRate for currency in all_currencies}
+    for spend in spends:
+        spend_rate = currency_by_rate.get(spend.currency)
+        stat_rate = currency_by_rate.get(stat_currency)
+
+        if spend_rate is None or stat_rate is None:
+            raise ValueError(f"Missing rate for {spend.currency} or {stat_currency}")
+
+        amount_in_stat_currency = spend.amount * spend_rate / stat_rate
+        total += amount_in_stat_currency
+
+    return total
+
+
+def formated_stat_by_categories (stat_by_category: list[StatByCategoryGqlResponse]) -> dict:
+    sums = 0.0
+    currency = set()
+    category_name = set()
+    first_spend_date = None
+    last_spend_date = None
+    is_contains_archived = False
+    for category in stat_by_category:
+        sums += category.sum
+        currency.add(category.currency)
+        if category.categoryName == 'Archived':
+            is_contains_archived = True
+        else:
+            category_name.add(category.categoryName)
+        if first_spend_date is None or category.firstSpendDate < first_spend_date:
+            first_spend_date = category.firstSpendDate
+        if last_spend_date is None or category.lastSpendDate > last_spend_date:
+            last_spend_date = category.lastSpendDate
+    return {
+        'sum': sums,
+        'currency': list(currency),
+        'category_name': list(category_name),
+        'is_contains_archived': is_contains_archived,
+        'first_spend_date': first_spend_date,
+        'last_spend_date': last_spend_date,
+    }

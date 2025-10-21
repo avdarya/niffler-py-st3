@@ -13,4 +13,3 @@ class GRPCLoggingInterceptor(grpc.UnaryUnaryClientInterceptor):
     ) -> Callable:
         response = continuation(client_call_details, request)
         return response
-

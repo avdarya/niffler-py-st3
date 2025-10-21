@@ -31,6 +31,10 @@ class ProfilePageLocators:
         return page.get_by_placeholder('Add new category')
 
     @staticmethod
+    def fullname_input(page: Page) -> Locator:
+        return page.locator('#name')
+
+    @staticmethod
     def edit_category_input(page: Page) -> Locator:
         return page.get_by_placeholder('Edit category')
 
@@ -100,3 +104,7 @@ class ProfilePageLocators:
     @staticmethod
     def helper_text_add_category(page: Page) -> Locator:
         return page.get_by_text('Allowed category length is from 2 to 50 symbols')
+
+    @staticmethod
+    def save_changes_button(page: Page) -> Locator:
+        return page.get_by_role('button', name='Save changes')

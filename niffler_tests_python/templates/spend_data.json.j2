@@ -1,0 +1,57 @@
+[
+  { "amount": 120.50, "description": "Lunch at cafe", "currency": "RUB",
+    "spendDate": "{{ now.date() }}",
+    "category": { "name": "Food" }
+  },
+  { "amount": 875.00, "description": "Groceries at supermarket", "currency": "USD",
+    "spendDate": "{{ now.date() }}",
+    "category": { "name": "Food" }
+  },
+  { "amount": 56.75, "description": "Coffee with friends", "currency": "EUR",
+    "spendDate": "{{ now.date() }}",
+    "category": { "name": "Cafe" }
+  },
+
+  { "amount": 320.40, "description": "Gas station payment", "currency": "RUB",
+    "spendDate": "{{ (now - timedelta(days=3)).date() }}",
+    "category": { "name": "Transport" }
+  },
+  { "amount": 1499.99, "description": "Online purchase", "currency": "USD",
+    "spendDate": "{{ (now - timedelta(days=5)).date() }}",
+    "category": { "name": "Shopping" }
+  },
+  { "amount": 210.10, "description": "Taxi ride", "currency": "EUR",
+    "spendDate": "{{ (now - timedelta(days=6)).date() }}",
+    "category": { "name": "Transport" }
+  },
+
+  { "amount": 870.00, "description": "Restaurant dinner", "currency": "RUB",
+    "spendDate": "{{ (now - relativedelta(months=1)).date() }}",
+    "category": { "name": "Food" }
+  },
+  { "amount": 75.50, "description": "Book purchase", "currency": "USD",
+    "spendDate": "{{ (now - relativedelta(months=1)).date() }}",
+    "category": { "name": "Education" }
+  },
+  { "amount": 450.20, "description": "Clothes shopping", "currency": "EUR",
+    "spendDate": "{{ (now - relativedelta(months=1)).date() }}",
+    "category": { "name": "Shopping" }
+  },
+
+  { "amount": 980.00, "description": "Utilities bill", "currency": "RUB",
+    "spendDate": "{{ (now - relativedelta(months=1, days=-1)).date() }}",
+    "category": { "name": "Home" }
+  },
+  { "amount": 330.80, "description": "Cinema tickets", "currency": "USD",
+    "spendDate": "{{ (now - relativedelta(months=1, days=-1)).date() }}",
+    "category": { "name": "Home" }
+  },
+  { "amount": 640.25, "description": "Gym membership", "currency": "EUR",
+    "spendDate": "{{ (now - relativedelta(months=1, days=-1)).date() }}",
+    "category": { "name": "Education" }
+  },
+  { "amount": 120.50, "description": "Lunch at cafe", "currency": "KZT",
+    "spendDate": "{{ now.date() }}",
+    "category": { "name": "Food" }
+  }
+]

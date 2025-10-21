@@ -79,3 +79,20 @@ class SoapSession(Session):
     @allure_attach_request
     def request(self, method: str, path: str = '', **kwargs) -> Response:
         return super().request(method, urljoin(str(self.soap_url), path), **kwargs)
+
+class GraphqlSession(Session):
+
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__()
+        self.graphql_url = kwargs.pop("graphql_url", None)
+        self.token = kwargs.get("token", None)
+        self.headers.update({
+            "Authorization": f"Bearer {self.token}",
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+        })
+
+    @raise_for_status
+    @allure_attach_request
+    def request(self, method: str, path: str, check_status: bool = True, **kwargs) -> Response:
+        return super().request(method, urljoin(str(self.graphql_url), path), **kwargs)

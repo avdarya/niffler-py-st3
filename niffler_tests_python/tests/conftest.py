@@ -24,7 +24,6 @@ from niffler_tests_python.grpc_pb.internal.pb.niffler_currency_pb2_pbreflect imp
 from niffler_tests_python.clients.kafka_client import KafkaClient
 from niffler_tests_python.clients.oauth_client import OAuthClient
 from niffler_tests_python.databases.auth_db import AuthDB
-from niffler_tests_python.settings.client_config import ClientConfig
 from niffler_tests_python.settings.grpc_config import GRPCConfig
 from niffler_tests_python.settings.server_config import ServerConfig
 from niffler_tests_python.web_pages.LoginPage import LoginPage
@@ -39,6 +38,7 @@ pytest_plugins = [
     'niffler_tests_python.fixtures.test_data_fixtures',
     'niffler_tests_python.fixtures.browser_fixtures',
     'niffler_tests_python.fixtures.people_fixtures',
+    'niffler_tests_python.fixtures.invitation_fixtures',
 ]
 
 
@@ -81,10 +81,6 @@ def pytest_fixture_setup(fixturedef: FixtureDef, request: FixtureRequest):
     item = logger.get_last_item()
     scope_letter = fixturedef.scope[0].upper()
     item.name = f"[{scope_letter}] " + " ".join(fixturedef.argname.split("_")).title()
-
-# def pytest_addoption(parser) -> None:
-#     parser.addoption("--browser", default="chrome")
-# TODO flags for browser name, headed
 
 def pytest_addoption(parser: pytest.Parser) -> None:
     parser.addoption('--grpc-mock', action='store_true', default=False)

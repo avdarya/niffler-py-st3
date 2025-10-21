@@ -1,0 +1,14 @@
+query GetUser {
+    user {
+        id
+        username
+        fullname
+        photo
+        photoSmall
+        friendshipStatus
+        categories {
+            name
+            archived
+        }
+    }
+}

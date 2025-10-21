@@ -10,12 +10,10 @@ class UserApiClient:
     def __init__(self, session: BaseSession) -> None:
         self.session = session
 
-    @allure.step('[API] Get current user')
     def get_current_user(self) -> UserModel:
         response = self.session.get("/api/users/current")
         return UserModel.model_validate(response.json())
 
-    @allure.step('[API] Update user: userdata={userdata}')
     def update_name(self, userdata: UserModelUpdate) -> UserModel:
         response = self.session.post(
             "/api/users/update",

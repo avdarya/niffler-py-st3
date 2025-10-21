@@ -20,8 +20,6 @@ from niffler_tests_python.web_pages.SpendingPage import SpendingPage
 from niffler_tests_python.web_pages.components.HeaderComponent import HeaderComponent
 
 
-
-
 @pytest.fixture
 def register_page(page_not_authed: Page, server_cfg: ServerConfig) -> RegisterPage:
     return RegisterPage(page_not_authed, server_cfg)
@@ -49,7 +47,6 @@ def profile_page(page_authed: Page, server_cfg: ServerConfig) -> ProfilePage:
 @pytest.fixture
 def people_all_page(page_authed: Page, server_cfg: ServerConfig) -> PeopleAllPage:
     return PeopleAllPage(page_authed, server_cfg)
-
 
 @pytest.fixture
 def people_friends_page(page_authed: Page, server_cfg: ServerConfig) -> PeopleFriendsPage:
@@ -144,3 +141,4 @@ def go_to_profile_after_category(
     main_page.navigate()
     header.click_person_icon()
     header.click_profile_button()
+

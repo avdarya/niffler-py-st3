@@ -3,9 +3,11 @@ import pytest
 from typing import Any
 from collections.abc import Generator
 from pathlib import Path
+
+from faker import Faker
 from pytest import FixtureRequest
 from niffler_tests_python.clients.category_client import CategoryApiClient
-from niffler_tests_python.databases.spend_db import SpendModelDB
+from niffler_tests_python.databases.spend_db import SpendDB
 from niffler_tests_python.model.category import CategoryModel
 
 
@@ -13,7 +15,7 @@ from niffler_tests_python.model.category import CategoryModel
 def category(
         request: FixtureRequest,
         category_client: CategoryApiClient,
-        spend_db: SpendModelDB
+        spend_db: SpendDB
 ) -> Generator[CategoryModel, Any, None]:
     category_name = request.param
     api_current_categories = category_client.get_all_categories()
@@ -26,10 +28,22 @@ def category(
     spend_db.delete_category(added_category.id)
 
 @pytest.fixture
+def new_category_name(
+        user: tuple[str, str],
+        fake: Faker,
+        category_client: CategoryApiClient,
+        spend_db: SpendDB
+) -> Generator[str, None, None]:
+    category_name = f"{fake.word()}_{fake.random_int(min=1000, max=9999)}"
+    yield category_name
+    db_category = spend_db.get_user_category_by_name(user[0], category_name)
+    spend_db.delete_category(db_category.id)
+
+@pytest.fixture
 def archive_category(
         request: FixtureRequest,
         category_client: CategoryApiClient,
-        spend_db: SpendModelDB
+        spend_db: SpendDB
 ) -> Generator[CategoryModel, Any, None]:
     category_name = request.param
     api_current_categories = category_client.get_all_categories()
@@ -46,7 +60,7 @@ def archive_category(
 @pytest.fixture
 def fill_categories(
         category_client: CategoryApiClient,
-        spend_db: SpendModelDB
+        spend_db: SpendDB
 ) -> Generator[None, Any, None]:
     categories_path = Path(__file__).resolve().parents[1] / 'test_data' / 'category_data.json'
     with open(categories_path, 'r') as f:
@@ -64,7 +78,7 @@ def fill_categories(
 def two_categories(
         request: FixtureRequest,
         category_client: CategoryApiClient,
-        spend_db: SpendModelDB
+        spend_db: SpendDB
 ) -> Generator[tuple[CategoryModel, CategoryModel], Any, None]:
     name_1, name_2 = request.param
 
