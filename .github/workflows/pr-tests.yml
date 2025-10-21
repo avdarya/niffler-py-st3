@@ -1,0 +1,99 @@
+name: pull-request-tests
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+jobs:
+  pr-tests:
+    runs-on: ubuntu-latest
+    env:
+      PROFILE: docker
+      COMPOSE_PROFILES: test
+      PREFIX: qaguru
+      ARCH: amd64
+      ALLURE_DOCKER_API: ${{ secrets.ALLURE_DOCKER_API }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      BUILD_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      EXECUTION_TYPE: github
+      SPEND_DB_URL: ${{ vars.SPEND_DB_URL }}
+      USERDATA_DB_URL: ${{ vars.USERDATA_DB_URL }}
+      AUTH_DB_URL: ${{ vars.AUTH_DB_URL }}
+      FRONTEND_URL: ${{ vars.FRONTEND_URL }}
+      GATEWAY_URL: ${{ vars.GATEWAY_URL }}
+      AUTH_URL: ${{ vars.AUTH_URL }}
+      HEADED: ${{ vars.HEADED }}
+      KAFKA_ADDRESS: ${{ vars.KAFKA_ADDRESS }}
+      SOAP_URL: ${{ vars.SOAP_URL }}
+      GRAPHQL_URL: ${{ vars.GRAPHQL_URL }}
+      CURRENCY_SERVICE_HOST: ${{ vars.CURRENCY_SERVICE_HOST }}
+      CURRENCY_WIREMOCK_HOST: ${{ vars.CURRENCY_WIREMOCK_HOST }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Get the last commit message
+        run: |
+          echo "HEAD_COMMIT_MESSAGE=$(git show -s --format=%s)" >> $GITHUB_ENV
+
+      - name: Install Poetry
+        working-directory: ./niffler_tests_python
+        run: |
+          python3 -m pip install --user pipx
+          python3 -m pipx ensurepath
+          pipx install poetry
+          echo "POETRY_INSTALLED=$(poetry --version)" >> $GITHUB_ENV
+          echo "POETRY_VERSION=$(poetry --version)"
+
+      - name: Install dependencies
+        working-directory: ./niffler_tests_python
+        run: poetry install --with dev
+
+      - name: Build Docker
+        run: |
+          bash docker-compose-dev.sh
+          sleep 300
+          docker compose logs
+          docker ps -a
+
+      - name: Run tests
+        id: tests
+        working-directory: ./niffler_tests_python
+        run: |
+          echo "🚀 Running pytest..."
+          poetry run pytest -s -v tests/api/category/test_add_category_api.py
+          EXIT_CODE=$?
+          docker compose logs
+          echo "EXIT_CODE=$EXIT_CODE" >> $GITHUB_OUTPUT
+          echo "EXIT_CODE=$EXIT_CODE"
+
+#      - name: Add comment to PR with test result
+#        if: always()
+#        uses: actions/github-script@v7
+#        with:
+#          script: |
+#            const commitMsg = process.env.HEAD_COMMIT_MESSAGE;
+#            const exitCode = "${{ steps.tests.outputs.EXIT_CODE }}";
+#            const reportUrl = 'https://allure.niffler-stage.qa.guru/api/allure-docker-service/projects/niffler-py-st3-avdarya/reports/latest/index.html';
+#            const historyUrl = 'https://allure.niffler-stage.qa.guru/allure-docker-service-ui/projects/niffler-py-st3-avdarya';
+#            const statusEmoji = exitCode === "0" ? "✅" : "🔴";
+#            const message = `${statusEmoji} TEST RUN ${exitCode === "0" ? "PASSED" : "FAILED"} ${statusEmoji}\n\n[Allure report](${reportUrl})  |  [History](${historyUrl})  | Last commit: ${commitMsg}`;
+#            github.rest.issues.createComment({
+#              issue_number: context.issue.number,
+#              owner: context.repo.owner,
+#              repo: context.repo.repo,
+#              body: message
+#            });
+
+      - name: Cleanup containers
+        if: always()
+        run: docker compose down -v
+
+
+

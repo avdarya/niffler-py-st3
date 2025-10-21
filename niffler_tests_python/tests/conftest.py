@@ -96,10 +96,12 @@ def server_cfg(request: FixtureRequest) -> ServerConfig:
         chosen = raw[0] if raw else 'chromium'
     else:
         chosen = raw or 'chromium'
-    return ServerConfig(
+    config  = ServerConfig(
         browser_name=str(chosen).lower(),
         _env_file=".env"
     )
+    print(f'\nFROM conftest server_cfg: config.frontend_url={config.frontend_url}\nconfig.auth_url={config.auth_url}\nconfig.auth_db_url={config.auth_db_url}')
+    return config
 
 @pytest.fixture(scope="session")
 def grpc_cfg(request: FixtureRequest) -> GRPCConfig:

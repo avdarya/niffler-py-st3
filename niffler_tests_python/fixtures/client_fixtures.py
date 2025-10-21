@@ -18,6 +18,7 @@ def base_session(
         user: tuple[str, str],
         auth_token_factory
 ) -> BaseSession:
+    print(f'\nFROM client fixuters base session: \nserver_cfg.frontend_url={server_cfg.frontend_url} \nusernsme={user[0]}')
     username, password = user
     token = auth_token_factory(username, password)
     return BaseSession(gateway_url=server_cfg.gateway_url, token=token)
