@@ -1,6 +1,7 @@
 name: pull-request-tests
 
 on:
+  workflow_dispatch:
   pull_request:
     types: [opened, reopened, synchronize]
 
@@ -9,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       PROFILE: docker
-      COMPOSE_PROFILES: test
+      COMPOSE_PROFILES: ""
       PREFIX: qaguru
       ARCH: amd64
       ALLURE_DOCKER_API: ${{ secrets.ALLURE_DOCKER_API }}
@@ -40,7 +41,9 @@ jobs:
 
       - name: Get the last commit message
         run: |
-          echo "HEAD_COMMIT_MESSAGE=$(git show -s --format=%s)" >> $GITHUB_ENV
+          MSG="$(git show -s --format=%s)"
+          echo "HEAD_COMMIT_MESSAGE=$MSG" >> $GITHUB_ENV
+          echo "HEAD_COMMIT_MESSAGE=$MSG"
 
       - name: Install Poetry
         working-directory: ./niffler_tests_python
@@ -58,7 +61,6 @@ jobs:
       - name: Build Docker
         run: |
           bash docker-compose-dev.sh
-          sleep 300
           docker compose logs
           docker ps -a
 
@@ -90,6 +92,8 @@ jobs:
 #              repo: context.repo.repo,
 #              body: message
 #            });
+
+
 
       - name: Cleanup containers
         if: always()
