@@ -2,7 +2,7 @@ import allure
 
 from niffler_tests_python.clients.spend_client import SpendApiClient
 from niffler_tests_python.databases.spend_db import SpendDB
-from niffler_tests_python.model.spend import SpendModel
+from niffler_tests_python.model.rest_model.spend import SpendModel
 from niffler_tests_python.utils.marks import TestData
 
 

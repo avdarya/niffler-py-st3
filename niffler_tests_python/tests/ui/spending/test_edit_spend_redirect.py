@@ -1,7 +1,8 @@
 import allure
 from datetime import datetime
 from niffler_tests_python.clients.spend_client import SpendApiClient
-from niffler_tests_python.model.spend import SpendModelAdd, SpendModel
+from niffler_tests_python.model.enums.currency_title import CurrencyTitle
+from niffler_tests_python.model.rest_model.spend import SpendModelAdd, SpendModel
 from niffler_tests_python.utils.helpers import wait_for_spend_row
 from niffler_tests_python.utils.marks import Pages, TestData
 from niffler_tests_python.web_pages.MainPage import MainPage
@@ -17,7 +18,7 @@ from niffler_tests_python.web_pages.SpendingPage import SpendingPage
 @TestData.spend(SpendModelAdd(
     amount=203.01,
     description="test edit spend redirect",
-    currency="USD",
+    currency=CurrencyTitle.USD.value,
     spendDate="2025-06-26",
     category={"name": "edit spend"}
 ))

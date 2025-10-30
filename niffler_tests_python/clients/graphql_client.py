@@ -1,5 +1,5 @@
-from niffler_tests_python.model.stat import StatisticsGqlResponse
-from niffler_tests_python.model.userdata import UserMutationGqlResponse, UserQueryGqlResponse
+from niffler_tests_python.model.gql_model.stat_gql import StatisticsGqlResponse
+from niffler_tests_python.model.gql_model.user_gql import UserQueryGqlResponse, UserMutationGqlResponse
 from niffler_tests_python.utils.sessions import GraphqlSession
 
 

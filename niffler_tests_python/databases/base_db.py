@@ -1,7 +1,7 @@
 from sqlalchemy import ScalarResult
 from sqlmodel import Session, select
 
-from niffler_tests_python.model.userdata import UserModelDB\
+from niffler_tests_python.model.db_model.userdata_db import UserModelDB
 
 
 class BaseDB:

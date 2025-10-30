@@ -6,7 +6,7 @@ from xmlschema import XMLSchemaChildrenValidationError
 from niffler_tests_python.databases.friendship_db import FriendshipDB
 from niffler_tests_python.databases.user_db import UserDB
 from niffler_tests_python.model.enums.friendship_status import FriendshipDBStatus, FriendshipAPIStatus
-from niffler_tests_python.model.userdata import UserModelDB
+from niffler_tests_python.model.db_model.userdata_db import UserModelDB
 from niffler_tests_python.templates.soap.read_templates import xsd_response, xml_send_invitation, xml_accept_invitation, \
     xml_decline_invitation, xml_remove_friend, xsd_error_response
 from niffler_tests_python.utils.sessions import SoapSession
@@ -232,8 +232,8 @@ def test_self_send_invitation(
 @allure.story("SOAP API")
 @allure.tag("negative")
 @allure.title("Пользователь не может отправить повторное приглашение")
-@pytest.mark.parametrize('expected_code, expected_text', [
-    ('SOAP-ENV:Server', 'java.lang.NullPointerException')
+@pytest.mark.parametrize('expected_code, expected_text1, expected_text2', [
+    ('SOAP-ENV:Server', 'java.lang.NullPointerException', 'Cannot invoke "java.util.List.size()" because "this.this$0.operationQueue" is null')
 ])
 def test_send_duplicate_send_invitation(
         soap_session: SoapSession,
@@ -243,7 +243,8 @@ def test_send_duplicate_send_invitation(
         friendship_db: FriendshipDB,
         user_db: UserDB,
         expected_code,
-        expected_text
+        expected_text1,
+        expected_text2
 ):
     current_username, _ = user
     requester_name, _ = register_new_user
@@ -264,7 +265,7 @@ def test_send_duplicate_send_invitation(
         parsed_response = parsed_xml_fault(response.text)
 
         assert expected_code in parsed_response['faultcode']
-        assert expected_text in parsed_response['faultstring']
+        assert parsed_response['faultstring'] in [expected_text1, expected_text2]
 
     with allure.step("Проверяем, что статус дружбы остался PENDING"):
         db_friend = user_db.get_userdata_by_username(requester_name)

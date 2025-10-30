@@ -6,10 +6,9 @@ from typing import Callable
 from playwright.sync_api import Locator
 from niffler_tests_python.clients.category_client import CategoryApiClient
 from niffler_tests_python.clients.spend_client import SpendApiClient
-from niffler_tests_python.model.category import CategoryModel
-from niffler_tests_python.model.enums.currency_title import CurrencyTitle
-from niffler_tests_python.model.spend import SpendModelDB
-from niffler_tests_python.model.stat import StatByCategoryGqlResponse
+from niffler_tests_python.model.rest_model.category import CategoryModel
+from niffler_tests_python.model.db_spend.spend_db import SpendModelDB
+from niffler_tests_python.model.gql_model.stat_gql import StatByCategoryGqlResponse
 from niffler_tests_python.web_pages.MainPage import MainPage
 
 

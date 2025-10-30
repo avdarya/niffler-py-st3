@@ -1,7 +1,7 @@
 import pytest
 from _pytest.mark import MarkDecorator
 
-from niffler_tests_python.model.spend import SpendModelAdd
+from niffler_tests_python.model.rest_model.spend import SpendModelAdd
 
 
 class Pages:

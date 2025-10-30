@@ -3,7 +3,7 @@ import pytest
 
 from niffler_tests_python.clients.category_client import CategoryApiClient
 from niffler_tests_python.databases.spend_db import SpendDB
-from niffler_tests_python.model.category import CategoryModel
+from niffler_tests_python.model.rest_model.category import CategoryModel
 from niffler_tests_python.utils.marks import TestData
 
 

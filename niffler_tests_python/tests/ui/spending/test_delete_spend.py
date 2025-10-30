@@ -1,7 +1,8 @@
 import allure
 from niffler_tests_python.clients.spend_client import SpendApiClient
 from niffler_tests_python.databases.spend_db import SpendDB
-from niffler_tests_python.model.spend import SpendModelAdd, SpendModel
+from niffler_tests_python.model.enums.currency_title import CurrencyTitle
+from niffler_tests_python.model.rest_model.spend import SpendModelAdd, SpendModel
 from niffler_tests_python.utils.helpers import wait_for_spend_row
 from niffler_tests_python.utils.marks import Pages, TestData
 from niffler_tests_python.web_pages.MainPage import MainPage
@@ -16,8 +17,8 @@ from niffler_tests_python.web_pages.MainPage import MainPage
 @TestData.spend(SpendModelAdd(
     amount=9.01,
     description="test delete spending by one",
-    currency="EUR",
-    spendDate="2025-06-23T21:00:00.000+00:00",
+    currency=CurrencyTitle.EUR.value,
+    spendDate="2025-06-23",
     category={"name": "spend delete by one"}
 ))
 def test_delete_spending_by_one(
@@ -118,8 +119,8 @@ def test_delete_spending_by_list(main_page: MainPage, spend_client: SpendApiClie
 @TestData.spend(SpendModelAdd(
     amount=12.01,
     description="test cancel delete spend",
-    currency="USD",
-    spendDate="2025-06-26T21:00:00.000+00:00",
+    currency=CurrencyTitle.USD.value,
+    spendDate="2025-06-26",
     category={"name": "cancel delete spend"}
 ))
 def test_cancel_delete_spend(

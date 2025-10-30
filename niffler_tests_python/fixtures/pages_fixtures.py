@@ -1,14 +1,9 @@
-from time import sleep
-
 import pytest
-from playwright.sync_api import Page
-from typing import Callable, Any, Generator
 
-from selenium.webdriver.remote.webdriver import WebDriver
-from playwright.sync_api import Page, Browser, sync_playwright
-from niffler_tests_python.model.category import CategoryModel
-from niffler_tests_python.model.spend import SpendModel
-from niffler_tests_python.model.userdata import UserFriendshipModel, UserModelDB
+from playwright.sync_api import Page
+from niffler_tests_python.model.rest_model.category import CategoryModel
+from niffler_tests_python.model.rest_model.spend import SpendModel
+from niffler_tests_python.model.db_model.userdata_db import UserModelDB
 from niffler_tests_python.settings.server_config import ServerConfig
 from niffler_tests_python.web_pages.LoginPage import LoginPage
 from niffler_tests_python.web_pages.MainPage import MainPage

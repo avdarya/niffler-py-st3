@@ -1,7 +1,9 @@
 import allure
 import pytest
 from niffler_tests_python.clients.spend_client import SpendApiClient
-from niffler_tests_python.model.spend import SpendModelAdd, SpendModel
+from niffler_tests_python.model.enums.currency_title import CurrencyTitle
+from niffler_tests_python.model.enums.period_title import PeriodTitle
+from niffler_tests_python.model.rest_model.spend import SpendModelAdd, SpendModel
 from niffler_tests_python.utils.marks import TestData
 from niffler_tests_python.web_pages.MainPage import MainPage
 
@@ -15,7 +17,7 @@ from niffler_tests_python.web_pages.MainPage import MainPage
 @TestData.spend(SpendModelAdd(
     amount = 8989.05,
     description = "test search spend by description",
-    currency = "RUB",
+    currency = CurrencyTitle.RUB.value,
     spendDate = "2025-06-27",
     category = {"name": "category for search desc"}
 ))
@@ -55,7 +57,7 @@ def test_search_spend_by_description(spend: SpendModel, main_page: MainPage, spe
 @TestData.spend(SpendModelAdd(
     amount = 8989.05,
     description = "test search spend by category",
-    currency = "RUB",
+    currency = CurrencyTitle.RUB.value,
     spendDate = "2025-06-27",
     category = {"name": "category for search category"}
 ))
@@ -96,22 +98,22 @@ def test_search_spend_by_category(spend: SpendModel, main_page: MainPage, spend_
     {
         "amount": 8989.05,
         "description": "test search spend by MONTH",
-        "currency": "RUB",
-        "spendDate": "MONTH",
+        "currency": CurrencyTitle.RUB.value,
+        "spendDate": PeriodTitle.MONTH.value,
         "category": {"name": "category for search period"}
     },
     {
         "amount": 8989.05,
         "description": "test search spend by WEEK",
-        "currency": "RUB",
-        "spendDate": "WEEK",
+        "currency": CurrencyTitle.RUB.value,
+        "spendDate": PeriodTitle.WEEK.value,
         "category": {"name": "category for search period"}
     },
     {
         "amount": 8989.05,
         "description": "test search spend by TODAY",
-        "currency": "RUB",
-        "spendDate": "TODAY",
+        "currency": CurrencyTitle.RUB.value,
+        "spendDate": PeriodTitle.TODAY.value,
         "category": {"name": "category for search period"}
     }
 ], indirect=True)
@@ -154,7 +156,7 @@ def test_search_spend_by_period(
 @allure.tag("positive")
 @allure.title("Поиск трат по валюте")
 @TestData.fill_spends
-@pytest.mark.parametrize("currency", ["RUB", "KZT", "EUR", "USD"])
+@pytest.mark.parametrize("currency", [CurrencyTitle.RUB.value, CurrencyTitle.KZT.value, CurrencyTitle.EUR.value, CurrencyTitle.USD.value])
 def test_search_spend_by_currency(
         main_page: MainPage,
         spend_client: SpendApiClient,

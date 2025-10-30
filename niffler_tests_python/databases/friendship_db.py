@@ -3,8 +3,8 @@ from sqlmodel import select
 from sqlalchemy import func, distinct
 from niffler_tests_python.databases.userdata_base_db import UserdataBaseDB
 from niffler_tests_python.model.enums.friendship_status import FriendshipDBStatus
-from niffler_tests_python.model.friendship import FriendshipModelDB
-from niffler_tests_python.model.userdata import UserModelDB
+from niffler_tests_python.model.db_model.friendship_db import FriendshipModelDB
+from niffler_tests_python.model.db_model.userdata_db import UserModelDB
 from niffler_tests_python.settings.server_config import ServerConfig
 
 

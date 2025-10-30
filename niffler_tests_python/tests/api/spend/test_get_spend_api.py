@@ -1,7 +1,8 @@
 import allure
 from niffler_tests_python.clients.spend_client import SpendApiClient
 from niffler_tests_python.databases.spend_db import SpendDB
-from niffler_tests_python.model.spend import SpendModelAdd, SpendModel
+from niffler_tests_python.model.enums.currency_title import CurrencyTitle
+from niffler_tests_python.model.rest_model.spend import SpendModelAdd, SpendModel
 from niffler_tests_python.utils.marks import  TestData
 
 
@@ -13,8 +14,8 @@ from niffler_tests_python.utils.marks import  TestData
 @TestData.spend(SpendModelAdd(
     amount=203.01,
     description="test get spend by id",
-    currency="USD",
-    spendDate="2025-06-26T21:00:00.000+00:00",
+    currency=CurrencyTitle.USD,
+    spendDate="2025-06-26",
     category={"name": "get spend by id"}
 ))
 def test_get_spend_by_id(
@@ -43,7 +44,7 @@ def test_get_spend_by_id(
             assert get_spend.username == username
         with allure.step('Проверить соответствие данных в базе данных'):
             assert get_spend.id == str(db_spend.id)
-            assert get_spend.spendDate.astimezone().date() == db_spend.spend_date
+            assert get_spend.spendDate.date() == db_spend.spend_date
             assert get_spend.category.name == db_category.name
             assert get_spend.category.username == db_category.username
             assert get_spend.category.archived == db_category.archived

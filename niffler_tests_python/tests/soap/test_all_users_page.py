@@ -5,7 +5,7 @@ import pytest
 from xmlschema import XMLSchemaChildrenValidationError
 
 from niffler_tests_python.databases.user_db import UserDB
-from niffler_tests_python.model.userdata import UserModelDB
+from niffler_tests_python.model.db_model.userdata_db import UserModelDB
 from niffler_tests_python.templates.soap.read_templates import  xsd_response, xml_all_users_page
 from niffler_tests_python.utils.marks import TestData
 from niffler_tests_python.utils.sessions import SoapSession
@@ -17,6 +17,7 @@ from niffler_tests_python.utils.soap_parser import parsed_xml_users_page
 @allure.story("SOAP API")
 @allure.tag("positive")
 @allure.title("Получение страницы со списком пользователей")
+@pytest.mark.isolated
 @pytest.mark.parametrize('page, size', [(0, 10), (1, 10)])
 @TestData.people_list(15)
 def test_get_all_users_page(
@@ -44,13 +45,16 @@ def test_get_all_users_page(
     with allure.step("Парсим XML-ответ и извлекаем пользователей"):
         parsed_response = parsed_xml_users_page(response.text)
         api_usernames = [user['username'] for user in parsed_response['users']]
+        prepared_api_usernames = set(api_usernames)
     with allure.step("Получаем пользователей из базы данных"):
-        db_users = user_db.get_users_by_filter(page=page, size=size, sort='username')
+        db_users = user_db.get_users_by_filter(page=page, size=size, sort='username', exclude=username)
         db_usernames = [user.username for user in db_users]
-        db_total_people = user_db.get_users_count() - 1
+        db_total_people = user_db.get_users_count(exclude=username)
+        prepared_db_usernames = set(db_usernames)
+
     with allure.step("Проверяем соответствие пользователей API ↔ БД"):
         assert len(api_usernames) == len(db_usernames)
-        assert set(api_usernames) == set(db_usernames)
+        assert prepared_api_usernames == prepared_db_usernames
         assert parsed_response['size'] == size
         assert parsed_response['number'] == page
         assert parsed_response['totalElements'] == db_total_people
@@ -61,6 +65,7 @@ def test_get_all_users_page(
 @allure.story("SOAP API")
 @allure.tag("positive")
 @allure.title("Получение страницы пользователей по поисковому запросу")
+@pytest.mark.isolated
 @pytest.mark.parametrize('page, size', [(0, 10)])
 @TestData.people_list(15)
 def test_get_all_users_page_by_search(

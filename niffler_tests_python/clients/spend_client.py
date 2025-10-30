@@ -1,6 +1,8 @@
-from niffler_tests_python.model.currency import CurrencyModel
-from niffler_tests_python.model.error_response import ErrorResponseModel
-from niffler_tests_python.model.spend import SpendModel, SpendModelAdd, SpendModelEdit
+from datetime import timedelta
+
+from niffler_tests_python.model.rest_model.currency import CurrencyModel
+from niffler_tests_python.model.rest_model.error_response import ErrorResponseModel
+from niffler_tests_python.model.rest_model.spend import SpendModel, SpendModelAdd, SpendModelEdit
 from niffler_tests_python.utils.sessions import BaseSession
 
 
@@ -16,7 +18,9 @@ class SpendApiClient:
             "/api/spends/all",
             params={"filterCurrency": filter_currency, "filterPeriod": filter_period}
         )
-        return [SpendModel.model_validate(item) for item in response.json()]
+        spends = [SpendModel.model_validate(item) for item in response.json()]
+        updated_spends = [spend.model_copy(update={'spendDate': spend.spendDate + timedelta(hours=3)}) for spend in spends]
+        return updated_spends
 
     def get_all_currencies(self) -> list[CurrencyModel]:
         response = self.session.get("/api/currencies/all")
@@ -25,7 +29,9 @@ class SpendApiClient:
 
     def get_spend_by_id(self, spend_id: str) -> SpendModel:
         response = self.session.get(f"/api/spends/{spend_id}")
-        return SpendModel.model_validate(response.json())
+        spend = SpendModel.model_validate(response.json())
+        updated_spend = spend.model_copy(update={'spendDate': spend.spendDate + timedelta(hours=3)})
+        return updated_spend
 
     def add_spend(self, spend: SpendModelAdd) -> SpendModel:
         response = self.session.post(

@@ -1,5 +1,4 @@
-import allure
-from niffler_tests_python.model.userdata import UserModel, UserModelUpdate, UserFriendshipModel, UserName
+from niffler_tests_python.model.rest_model.userdata import UserModel, UserModelUpdate, UserFriendshipModel, UserName
 from niffler_tests_python.utils.sessions import BaseSession
 
 

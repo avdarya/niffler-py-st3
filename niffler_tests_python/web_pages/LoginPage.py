@@ -41,4 +41,4 @@ class LoginPage(BasePage):
         expect(self.locators.login_text(self._page)).to_be_visible()
 
     def is_visible_wrong_user_data_text(self):
-        expect(self.locators.wrong_user_data_text(self._page)).to_be_visible()
+        expect(self.locators.wrong_user_data_text(self._page)).to_be_visible(timeout=5000)

@@ -14,9 +14,10 @@ def user(
         auth_db: AuthDB,
         user_db: UserDB,
         request: FixtureRequest,
-        fake: Faker
+        fake: Faker,
+        worker_id: str
 ) -> tuple[str, str]:
-    username = fake.user_name()
+    username = f'{fake.user_name()}_{worker_id}'
     password = fake.password()
     auth_client.register(username, password)
 
@@ -32,9 +33,10 @@ def username_with_teardown(
         auth_db: AuthDB,
         user_db: UserDB,
         request: FixtureRequest,
-        fake: Faker
+        fake: Faker,
+        worker_id: str
 ) -> str:
-    username = fake.user_name()
+    username = f'{fake.user_name()}_{worker_id}'
 
     def fin():
         user_db.delete_user(username)
@@ -49,9 +51,10 @@ def register_new_user(
         auth_db: AuthDB,
         user_db: UserDB,
         request: FixtureRequest,
-        fake: Faker
+        fake: Faker,
+        worker_id: str
 ) -> tuple[str, str]:
-    username = fake.user_name()
+    username = f'{fake.user_name()}_{worker_id}'
     password = fake.password()
     auth_client.register(username, password)
     def fin():
@@ -65,5 +68,5 @@ def register_new_user(
 def make_future_date() -> Callable[[int], str]:
     def _make(days: int) -> str:
         ft_date = datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=days)
-        return ft_date.replace(hour=21, minute=0, second=0, microsecond=0).isoformat(timespec='milliseconds').replace('+00:00', 'Z')
+        return ft_date.date().isoformat()
     return _make

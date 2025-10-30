@@ -1,4 +1,3 @@
-import math
 import allure
 
 import pytest
@@ -9,7 +8,6 @@ from niffler_tests_python.databases.spend_db import SpendDB
 from niffler_tests_python.fixtures.client_fixtures import spend_db
 from niffler_tests_python.model.enums.currency_title import CurrencyTitle
 from niffler_tests_python.model.enums.period_title import PeriodTitle
-from niffler_tests_python.model.spend import SpendModel, SpendModelDB
 from niffler_tests_python.utils.graphql_loader import load_graphql_query
 from niffler_tests_python.utils.helpers import formated_stat_by_categories, calc_total_stat_by_currency
 from niffler_tests_python.utils.marks import TestData

@@ -1,7 +1,7 @@
 from datetime import datetime
 from sqlmodel import Field
 
-from niffler_tests_python.model._bases import UserdataDBBase
+from niffler_tests_python.model.db_model._bases import UserdataDBBase
 from niffler_tests_python.model.enums.friendship_status import FriendshipDBStatus
 
 

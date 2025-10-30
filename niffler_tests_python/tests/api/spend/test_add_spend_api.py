@@ -3,8 +3,8 @@ import pytest
 from datetime import datetime
 from niffler_tests_python.clients.spend_client import SpendApiClient
 from niffler_tests_python.databases.spend_db import SpendDB
-from niffler_tests_python.model.category import CategoryModel
-from niffler_tests_python.model.spend import SpendModelAdd
+from niffler_tests_python.model.rest_model.category import CategoryModel
+from niffler_tests_python.model.rest_model.spend import SpendModelAdd
 from niffler_tests_python.utils.marks import TestData
 
 
@@ -15,10 +15,10 @@ from niffler_tests_python.utils.marks import TestData
 @allure.title("Пользователь может создать новую трату")
 @TestData.category("add spend")
 @pytest.mark.parametrize("amount, currency, spend_date, description", [
-    ("10.01", "RUB", "2024-12-09T21:00:00.000+00:00", "test add spending"),
-    ("501", "KZT", "2025-01-15T21:00:00.000+00:00", "test add spending"),
-    ("0.01", "EUR", "2025-04-09T21:00:00.000+00:00", "test add spending"),
-    ("3", "USD", "2025-07-09T21:00:00.000+00:00", "test add spending")
+    ("10.01", "RUB", "2024-12-09", "test add spending"),
+    ("501", "KZT", "2025-01-15", "test add spending"),
+    ("0.01", "EUR", "2025-04-09", "test add spending"),
+    ("3", "USD", "2025-07-09", "test add spending")
 ])
 def test_add_spending_and_verifydata(
         spend_client: SpendApiClient,
@@ -31,8 +31,7 @@ def test_add_spending_and_verifydata(
         user: tuple[str, str]
 ):
     username, _ = user
-    expected_date = datetime.fromisoformat(spend_date.replace("Z", "+00:00")).date()
-    expected_date_db = datetime.fromisoformat(spend_date.replace("Z", "+00:00")).astimezone().date()
+    expected_date = datetime.strptime(spend_date, "%Y-%m-%d").date()
 
     with allure.step("Получить количество трат до добавления"):
         before_get_all_spends = spend_client.get_all_spends()
@@ -89,4 +88,4 @@ def test_add_spending_and_verifydata(
         assert db_spend.description == description
         assert db_spend.currency == currency
         assert db_spend.username == username
-        assert db_spend_date == expected_date_db
+        assert db_spend_date == expected_date

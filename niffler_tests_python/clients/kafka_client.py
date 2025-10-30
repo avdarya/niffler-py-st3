@@ -86,7 +86,7 @@ class KafkaClient:
         except Exception as err:
             logging.error("probably no such topic: %s: %s", topic, err)
 
-    def log_msg_and_json(self, topic_partitions):
+    def log_msg_and_json(self, topic_partitions, filter_value: str | None = None):
         msg = self.consume_message(topic_partitions, timeout=25)
         logging.info(msg)
         return msg

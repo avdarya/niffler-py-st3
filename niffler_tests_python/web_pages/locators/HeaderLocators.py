@@ -7,10 +7,6 @@ from playwright.sync_api import Page, Locator
 
 @dataclass(frozen=True)
 class HeaderLocators:
-    # MENU_BUTTON = (By.CSS_SELECTOR, 'button[aria-label="Menu"]')
-    # PROFILE_BUTTON = (By.CSS_SELECTOR, 'a[href = "/profile"]')
-    # SPENDING_BUTTON = (By.CSS_SELECTOR, 'a[href="/spending"]')
-    # ACCOUNT_MENU= (By.ID, 'account-menu')
 
     @staticmethod
     def spending_button(page: Page) -> Locator:

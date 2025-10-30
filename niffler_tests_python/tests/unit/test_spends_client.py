@@ -4,7 +4,7 @@ import pytest
 import allure
 
 from niffler_tests_python.clients.category_client import CategoryApiClient
-from niffler_tests_python.model.category import CategoryModel
+from niffler_tests_python.model.rest_model.category import CategoryModel
 
 
 @pytest.fixture

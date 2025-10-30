@@ -4,8 +4,8 @@ from sqlmodel import select
 from sqlalchemy import Engine, create_engine, event
 
 from niffler_tests_python.databases.base_db import BaseDB
-from niffler_tests_python.model.auth_user import AuthUserModelDB
-from niffler_tests_python.model.authority import AuthorityModelDB
+from niffler_tests_python.model.db_model.auth_user_db import AuthUserModelDB
+from niffler_tests_python.model.db_model.authority_db import AuthorityModelDB
 from niffler_tests_python.settings.server_config import ServerConfig
 from niffler_tests_python.utils.allure_helpers import attach_sql
 

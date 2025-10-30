@@ -3,7 +3,8 @@ import pytest
 from datetime import datetime
 from niffler_tests_python.clients.spend_client import SpendApiClient
 from niffler_tests_python.databases.spend_db import SpendDB
-from niffler_tests_python.model.spend import SpendModelAdd, SpendModel, SpendModelEdit
+from niffler_tests_python.model.enums.currency_title import CurrencyTitle
+from niffler_tests_python.model.rest_model.spend import SpendModelAdd, SpendModel, SpendModelEdit
 from niffler_tests_python.utils.marks import TestData
 
 
@@ -15,12 +16,12 @@ from niffler_tests_python.utils.marks import TestData
 @TestData.spend(SpendModelAdd(
     amount=203.01,
     description="test edit spend",
-    currency="USD",
-    spendDate="2025-06-26T21:00:00.000+00:00",
+    currency=CurrencyTitle.USD,
+    spendDate="2025-06-26",
     category={"name": "edit spend"}
 ))
 @pytest.mark.parametrize("amount, currency, spend_date, description", [
-    ("456", "EUR", "2025-07-09T21:00:00.000+00:00", "spending for update")
+    ("456", CurrencyTitle.EUR, "2025-07-09", "spending for update")
 ])
 def test_edit_spend(
         spend: SpendModel,
@@ -33,8 +34,7 @@ def test_edit_spend(
         user: tuple[str, str]
 ):
     username, _ = user
-    expected_date = datetime.fromisoformat(spend_date.replace("Z", "+00:00")).date()
-    expected_date_db = datetime.fromisoformat(spend_date.replace("Z", "+00:00")).astimezone().date()
+    expected_date = datetime.strptime(spend_date, "%Y-%m-%d").date()
 
     with allure.step('Отправить запрос на редактирование траты'):
         data_for_edit = SpendModelEdit(
@@ -52,7 +52,6 @@ def test_edit_spend(
 
     with allure.step('Получить обновлённую запись о трате из базы данных'):
         db_spend = spend_db.get_spend(spend.id)
-        db_spend_date = datetime.combine(db_spend.spend_date, datetime.min.time()).date()
 
     with allure.step('Проверить корректность данных отредактированной траты в ответе'):
         assert edited_spend.amount == float(amount)
@@ -78,4 +77,4 @@ def test_edit_spend(
         assert db_spend.description == description
         assert db_spend.currency == currency
         assert db_spend.username == username
-        assert db_spend_date == expected_date_db
+        assert db_spend.spend_date == expected_date

@@ -6,10 +6,10 @@ from sqlmodel import select
 from sqlalchemy import func
 
 from niffler_tests_python.databases.base_db import BaseDB
-from niffler_tests_python.model.category import CategoryModelDB
+from niffler_tests_python.model.db_model.category_db import CategoryModelDB
 from niffler_tests_python.model.enums.currency_title import CurrencyTitle
 from niffler_tests_python.model.enums.period_title import PeriodTitle
-from niffler_tests_python.model.spend import SpendModelDB
+from niffler_tests_python.model.db_spend.spend_db import SpendModelDB
 from niffler_tests_python.settings.server_config import ServerConfig
 from niffler_tests_python.utils.allure_helpers import attach_sql
 
@@ -45,10 +45,6 @@ class SpendDB(BaseDB):
                      .where(CategoryModelDB.id.in_(category_ids))
                      .where(CategoryModelDB.archived == False))
         return self.execute(self.engine, statement, 'all')
-
-    # def get_category_list(self) -> list[CategoryModelDB]:
-    #     statement = select(CategoryModelDB)
-    #     return self.execute(self.engine, statement, 'all')
 
     def delete_category(self, category_id: str):
         self.delete_records(self.engine, CategoryModelDB, CategoryModelDB.id == category_id)
@@ -87,6 +83,6 @@ class SpendDB(BaseDB):
 
         return self.execute(self.engine, statement, "all")
 
-    def get_spend_count(self) -> int:
-        statement = select(func.count(SpendModelDB.id))
+    def get_spend_count(self, username: str) -> int:
+        statement = select(func.count(SpendModelDB.id)).where(SpendModelDB.username == username)
         return self.execute(self.engine, statement, 'one')

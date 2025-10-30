@@ -4,13 +4,11 @@ from niffler_tests_python.clients.user_client import UserApiClient
 from niffler_tests_python.databases.friendship_db import FriendshipDB
 from niffler_tests_python.databases.user_db import UserDB
 from niffler_tests_python.model.enums.friendship_status import FriendshipDBStatus, FriendshipAPIStatus
-from niffler_tests_python.model.userdata import UserModelDB, UserFriendshipModel
+from niffler_tests_python.model.rest_model.userdata import UserFriendshipModel
+from niffler_tests_python.model.db_model.userdata_db import UserModelDB
 from niffler_tests_python.utils.marks import Pages
 from niffler_tests_python.web_pages.PeopleAllPage import PeopleAllPage
 from niffler_tests_python.web_pages.PeopleFriendsPage import PeopleFriendsPage
-
-
-
 
 
 @allure.epic("Друзья")

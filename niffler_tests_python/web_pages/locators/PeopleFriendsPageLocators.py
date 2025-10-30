@@ -43,5 +43,9 @@ class PeopleFriendsPageLocators:
         return page.locator('tbody tr').all()
 
     @staticmethod
+    def friend_rows_locator(page: Page) -> Locator:
+        return page.locator('tbody tr')
+
+    @staticmethod
     def username_in_row(row: Locator) -> str:
         return row.locator('p').first.inner_text().strip()

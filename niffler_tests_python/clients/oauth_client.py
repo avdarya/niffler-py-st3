@@ -1,7 +1,7 @@
 import pkce
 from urllib.parse import urljoin
 
-from niffler_tests_python.model.oauth import OAuthRequest
+from niffler_tests_python.model.rest_model.oauth import OAuthRequest
 from niffler_tests_python.settings.server_config import ServerConfig
 from niffler_tests_python.utils.sessions import AuthSession
 

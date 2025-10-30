@@ -1,5 +1,3 @@
-from time import sleep
-
 import pytest
 from _pytest.fixtures import FixtureRequest
 from faker import Faker
@@ -9,7 +7,8 @@ from niffler_tests_python.clients.user_client import UserApiClient
 from niffler_tests_python.databases.auth_db import AuthDB
 from niffler_tests_python.databases.friendship_db import FriendshipDB
 from niffler_tests_python.databases.user_db import UserDB
-from niffler_tests_python.model.userdata import UserModelDB, UserName
+from niffler_tests_python.model.rest_model.userdata import UserName
+from niffler_tests_python.model.db_model.userdata_db import UserModelDB
 from niffler_tests_python.settings.server_config import ServerConfig
 from niffler_tests_python.utils.sessions import BaseSession
 from niffler_tests_python.utils.waiters import wait_until_timeout

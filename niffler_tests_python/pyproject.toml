@@ -39,6 +39,7 @@ ruff = "^0.12.2"
 pytest-cov = "^6.2.1"
 hypothesis = "^6.138.2"
 pytest-playwright = "^0.7.0"
+pytest-xdist = "^3.8.0"
 
 [tool.poetry]
 package-mode = false
@@ -47,6 +48,9 @@ package-mode = false
 addopts = [
     "--alluredir=allure-results",
     "--clean-alluredir"
+]
+markers = [
+    "isolated: tests that must run before or after all others"
 ]
 
 [tool.coverage.run]

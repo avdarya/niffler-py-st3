@@ -1,5 +1,5 @@
-from niffler_tests_python.model.category import CategoryModel
-from niffler_tests_python.model.error_response import ErrorResponseModel
+from niffler_tests_python.model.rest_model.category import CategoryModel
+from niffler_tests_python.model.rest_model.error_response import ErrorResponseModel
 from niffler_tests_python.utils.sessions import BaseSession
 
 

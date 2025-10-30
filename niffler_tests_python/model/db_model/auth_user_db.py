@@ -1,6 +1,6 @@
 from sqlmodel import Field
 
-from niffler_tests_python.model._bases import AuthDBBase
+from niffler_tests_python.model.db_model._bases import AuthDBBase
 
 
 class AuthUserModelDB(AuthDBBase, table=True):

@@ -1,5 +1,5 @@
 import pytest
-from typing import Callable, Any, Generator
+from typing import Any
 from collections.abc import Generator
 
 from playwright.sync_api import Page, Browser, sync_playwright
@@ -20,14 +20,14 @@ def browser(server_cfg: ServerConfig) -> Generator[Browser, Any, Any]:
 
 @pytest.fixture
 def page_not_authed(browser: Browser) -> Generator[Page, Any, Any]:
-    context = browser.new_context()
+    context = browser.new_context(locale='ru-RU')
     page = context.new_page()
     yield page
     context.close()
 
 @pytest.fixture
 def page_authed(browser: Browser, user: tuple[str, str], server_cfg: ServerConfig) -> Generator[Page, Any, Any]:
-    context = browser.new_context()
+    context = browser.new_context(locale='ru-RU')
     page = context.new_page()
     username, password = user
     login_page = LoginPage(page, server_cfg)

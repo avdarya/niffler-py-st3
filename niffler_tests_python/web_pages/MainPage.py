@@ -97,6 +97,7 @@ class MainPage(BasePage):
 
     def click_next_button(self) -> None:
         self.locators.next_button(self._page).click()
+        self._wait_table_updated()
 
     def click_previous_button(self) -> None:
         first_row = self._page.locator('tbody tr').first
@@ -106,11 +107,13 @@ class MainPage(BasePage):
 
         if first_text:
             expect(first_row).not_to_have_text(first_text, timeout=5000)
+        self._wait_table_updated()
 
     def enter_search_query(self, query: str) -> None:
         search_input = self.locators.search_input(self._page)
         search_input.type(query)
         search_input.press('Enter')
+        self._wait_table_updated()
 
     def get_search_query_input(self) -> str:
         return self.locators.search_input(self._page).input_value()
@@ -120,6 +123,7 @@ class MainPage(BasePage):
 
     def select_period_value(self, period: str) -> None:
         self.locators.period_option(self._page, period).click()
+        self._wait_table_updated()
 
     def get_period_input(self) -> str:
         return self.locators.period_input(self._page).input_value()
@@ -129,9 +133,21 @@ class MainPage(BasePage):
 
     def select_currency_value(self, currency: str) -> None:
         self.locators.currency_option(self._page, currency).click()
+        self._wait_table_updated()
 
     def get_currency_input(self) -> str:
         return self.locators.currency_input(self._page).input_value()
 
     def is_correct_url(self):
         expect(self._page).to_have_url(self.__url)
+
+    def _wait_table_updated(self, timeout: int = 5000):
+        first_row = self.locators.row(self._page)
+        if not first_row.is_visible():
+            self.locators.row(self._page).wait_for(timeout=timeout)
+            return
+        old_text = first_row.text_content()
+        try:
+            expect(first_row).not_to_have_text(old_text, timeout=timeout)
+        except AssertionError:
+            self._page.wait_for_load_state("networkidle", timeout=timeout)

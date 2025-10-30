@@ -36,6 +36,7 @@ env/
 env.bak/
 venv.bak/
 .env
+docker.env
 
 
 # Jupyter Notebook

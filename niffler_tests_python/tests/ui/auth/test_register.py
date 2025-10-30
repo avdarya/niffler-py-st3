@@ -1,5 +1,3 @@
-from time import sleep
-
 import allure
 from faker import Faker
 
@@ -61,12 +59,9 @@ def test_register_redirect_to_login(
         register_page.fill_password(password)
         register_page.fill_password_submit(password)
         register_page.submit()
-        sleep(2)
     with allure.step("Нажать на кнопку Sign in после успешной регистрации"):
         register_page.is_show_success_signin_button()
         register_page.click_success_signin()
-        sleep(2)
     with allure.step("Проверить переход на страницу /login и отображение заголовка Log in"):
         login_page.expected_url()
         login_page.is_visible_login_text()
-        sleep(2)

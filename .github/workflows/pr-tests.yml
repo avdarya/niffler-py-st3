@@ -13,22 +13,21 @@ jobs:
       COMPOSE_PROFILES: ""
       PREFIX: qaguru
       ARCH: amd64
-      ALLURE_DOCKER_API: ${{ secrets.ALLURE_DOCKER_API }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      BUILD_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
       EXECUTION_TYPE: github
-      SPEND_DB_URL: ${{ vars.SPEND_DB_URL }}
-      USERDATA_DB_URL: ${{ vars.USERDATA_DB_URL }}
-      AUTH_DB_URL: ${{ vars.AUTH_DB_URL }}
-      FRONTEND_URL: ${{ vars.FRONTEND_URL }}
-      GATEWAY_URL: ${{ vars.GATEWAY_URL }}
-      AUTH_URL: ${{ vars.AUTH_URL }}
+      BUILD_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      AUTH_DB_URL: ${{ secrets.AUTH_DB_URL }}
+      SPEND_DB_URL: ${{ secrets.SPEND_DB_URL }}
+      USERDATA_DB_URL: ${{ secrets.USERDATA_DB_URL }}
+      AUTH_URL: ${{ secrets.AUTH_URL }}
+      GATEWAY_URL: ${{ secrets.GATEWAY_URL }}
+      FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
       HEADED: ${{ vars.HEADED }}
-      KAFKA_ADDRESS: ${{ vars.KAFKA_ADDRESS }}
-      SOAP_URL: ${{ vars.SOAP_URL }}
-      GRAPHQL_URL: ${{ vars.GRAPHQL_URL }}
-      CURRENCY_SERVICE_HOST: ${{ vars.CURRENCY_SERVICE_HOST }}
-      CURRENCY_WIREMOCK_HOST: ${{ vars.CURRENCY_WIREMOCK_HOST }}
+      GRAPHQL_URL: ${{ secrets.GRAPHQL_URL }}
+      KAFKA_ADDRESS: ${{ secrets.KAFKA_ADDRESS }}
+      SOAP_URL: ${{ secrets.SOAP_URL }}
+      CURRENCY_SERVICE_HOST: ${{ secrets.CURRENCY_SERVICE_HOST }}
+      CURRENCY_WIREMOCK_HOST: ${{ secrets.CURRENCY_WIREMOCK_HOST }}
 
     steps:
       - name: Checkout repository
@@ -41,59 +40,59 @@ jobs:
 
       - name: Get the last commit message
         run: |
-          MSG="$(git show -s --format=%s)"
+          MSG="$(git log -1 --no-merges --pretty=format:%s)"
           echo "HEAD_COMMIT_MESSAGE=$MSG" >> $GITHUB_ENV
           echo "HEAD_COMMIT_MESSAGE=$MSG"
 
-      - name: Install Poetry
-        working-directory: ./niffler_tests_python
-        run: |
-          python3 -m pip install --user pipx
-          python3 -m pipx ensurepath
-          pipx install poetry
-          echo "POETRY_INSTALLED=$(poetry --version)" >> $GITHUB_ENV
-          echo "POETRY_VERSION=$(poetry --version)"
-
-      - name: Install dependencies
-        working-directory: ./niffler_tests_python
-        run: poetry install --with dev
-
-      - name: Build Docker
+      - name: Build docker services and run
         run: |
           bash docker-compose-dev.sh
           docker compose logs
           docker ps -a
 
-      - name: Run tests
-        id: tests
-        working-directory: ./niffler_tests_python
+      - name: Build container with tests
+        run: docker build -t qaguru/niffler-py-tests:latest -f ./niffler_tests_python/Dockerfile .
+
+      - name: Get compose network name
         run: |
-          echo "🚀 Running pytest..."
-          poetry run pytest -s -v tests/api/category/test_add_category_api.py
-          EXIT_CODE=$?
-          docker compose logs
-          echo "EXIT_CODE=$EXIT_CODE" >> $GITHUB_OUTPUT
-          echo "EXIT_CODE=$EXIT_CODE"
+          NET=$(docker network ls --format '{{.Name}}' | grep niffler | head -n1)
+          echo "NETWORK_NAME=$NET" >> $GITHUB_ENV
+          echo "Using network: $NET"
+      - name: Run tests
+        run: |
+          docker run --rm --network $NETWORK_NAME \
+            -e AUTH_DB_URL="$AUTH_DB_URL" \
+            -e SPEND_DB_URL="$SPEND_DB_URL" \
+            -e USERDATA_DB_URL="$USERDATA_DB_URL" \
+            -e AUTH_URL="$AUTH_URL" \
+            -e GATEWAY_URL="$GATEWAY_URL" \
+            -e FRONTEND_URL="$FRONTEND_URL" \
+            -e HEADED="$HEADED" \
+            -e GRAPHQL_URL="$GRAPHQL_URL" \
+            -e KAFKA_ADDRESS="$KAFKA_ADDRESS" \
+            -e SOAP_URL="$SOAP_URL" \
+            -e CURRENCY_SERVICE_HOST="$CURRENCY_SERVICE_HOST" \
+            -e CURRENCY_WIREMOCK_HOST="$CURRENCY_WIREMOCK_HOST" \
+            qaguru/niffler-py-tests:latest -s -v tests
 
-#      - name: Add comment to PR with test result
-#        if: always()
-#        uses: actions/github-script@v7
-#        with:
-#          script: |
-#            const commitMsg = process.env.HEAD_COMMIT_MESSAGE;
-#            const exitCode = "${{ steps.tests.outputs.EXIT_CODE }}";
-#            const reportUrl = 'https://allure.niffler-stage.qa.guru/api/allure-docker-service/projects/niffler-py-st3-avdarya/reports/latest/index.html';
-#            const historyUrl = 'https://allure.niffler-stage.qa.guru/allure-docker-service-ui/projects/niffler-py-st3-avdarya';
-#            const statusEmoji = exitCode === "0" ? "✅" : "🔴";
-#            const message = `${statusEmoji} TEST RUN ${exitCode === "0" ? "PASSED" : "FAILED"} ${statusEmoji}\n\n[Allure report](${reportUrl})  |  [History](${historyUrl})  | Last commit: ${commitMsg}`;
-#            github.rest.issues.createComment({
-#              issue_number: context.issue.number,
-#              owner: context.repo.owner,
-#              repo: context.repo.repo,
-#              body: message
-#            });
-
-
+      - name: Add comment to PR with test result
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const commitMsg = process.env.HEAD_COMMIT_MESSAGE;
+            const buildUrl = process.env.BUILD_URL;
+            const exitCode = "${{ steps.tests.outputs.EXIT_CODE }}";
+            const statusEmoji = exitCode === "0" ? "✅" : "🔴";
+            const message = `${statusEmoji} TEST RUN ${exitCode === "0" ? "PASSED" : "FAILED"} ${statusEmoji}\n\n` +
+                            `🔗 [View Workflow Run](${buildUrl})\n\n` +
+                            `📝 Last commit: ${commitMsg}`;
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: message
+            });
 
       - name: Cleanup containers
         if: always()

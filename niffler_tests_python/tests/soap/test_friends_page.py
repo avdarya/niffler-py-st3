@@ -6,7 +6,7 @@ from xmlschema import XMLSchemaChildrenValidationError
 
 from niffler_tests_python.databases.friendship_db import FriendshipDB
 from niffler_tests_python.databases.user_db import UserDB
-from niffler_tests_python.model.userdata import UserModelDB
+from niffler_tests_python.model.db_model.userdata_db import UserModelDB
 from niffler_tests_python.templates.soap.read_templates import  xsd_response, xml_friends_page
 from niffler_tests_python.utils.marks import TestData
 from niffler_tests_python.utils.sessions import SoapSession
@@ -18,6 +18,7 @@ from niffler_tests_python.utils.soap_parser import  parsed_xml_users_page
 @allure.story("SOAP API")
 @allure.tag("positive")
 @allure.title("Пользователь может получить страницу со списком друзей")
+@pytest.mark.isolated
 @pytest.mark.parametrize('page, size', [(0, 10), (1, 10)])
 @TestData.friend_list(15)
 def test_get_friends_page(

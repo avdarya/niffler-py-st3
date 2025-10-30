@@ -1,20 +1,15 @@
-import datetime
-import uuid
 import allure
 import grpc
 import pytest
-from typing import Callable, Any, Generator
+import os
+import subprocess
+from typing import Any
 from collections.abc import Generator
 
 from allure_commons.reporter import AllureReporter
 from allure_pytest.listener import AllureListener
 from faker import Faker
-from playwright.sync_api import Page, Browser, sync_playwright
-from pydantic import SecretStr
 from pytest import Item, FixtureDef, FixtureRequest
-from selenium import webdriver
-from selenium.webdriver.remote.webdriver import WebDriver
-from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from grpc import insecure_channel
 
 from niffler_tests_python.grpc_pb.internal.grpc.interceptors.grpc_allure import GRPCAllureInterceptor
@@ -22,12 +17,8 @@ from niffler_tests_python.grpc_pb.internal.grpc.interceptors.grpc_logging import
 from niffler_tests_python.grpc_pb.internal.pb.niffler_currency_pb2_pbreflect import NifflerCurrencyServiceClient
 
 from niffler_tests_python.clients.kafka_client import KafkaClient
-from niffler_tests_python.clients.oauth_client import OAuthClient
-from niffler_tests_python.databases.auth_db import AuthDB
 from niffler_tests_python.settings.grpc_config import GRPCConfig
 from niffler_tests_python.settings.server_config import ServerConfig
-from niffler_tests_python.web_pages.LoginPage import LoginPage
-from niffler_tests_python.web_pages.RegisterPage import RegisterPage
 
 pytest_plugins = [
     'niffler_tests_python.fixtures.auth_fixtures',
@@ -40,7 +31,6 @@ pytest_plugins = [
     'niffler_tests_python.fixtures.people_fixtures',
     'niffler_tests_python.fixtures.invitation_fixtures',
 ]
-
 
 def allure_logger(config) -> AllureReporter:
     listener: AllureListener = config.pluginmanager.get_plugin("allure_listener")
@@ -82,6 +72,63 @@ def pytest_fixture_setup(fixturedef: FixtureDef, request: FixtureRequest):
     scope_letter = fixturedef.scope[0].upper()
     item.name = f"[{scope_letter}] " + " ".join(fixturedef.argname.split("_")).title()
 
+# for parallel tests -->
+# def pytest_configure(config):
+#     # объявляем маркеры (чтобы pytest 8 не ругался)
+#     config.addinivalue_line("markers", "isolated: test must run serialized on a single worker")
+#     config.addinivalue_line("markers", "xdist_group(name): group tests to the same xdist worker")
+#
+# def _xdist_active(config) -> bool:
+#     # контролёр (не воркер) и действительно включён -n
+#     return (
+#         config.pluginmanager.hasplugin("xdist")
+#         and getattr(config, "workerinput", None) is None
+#         and getattr(config.option, "numprocesses", 0)
+#     )
+#
+# def pytest_collection_modifyitems(config, items):
+#     """
+#     НИЧЕГО не выкидываем из коллекции.
+#     Если запущено с -n, помечаем все @pytest.mark.isolated как xdist_group("__isolated__")
+#     и принудительно переводим стратегию в loadgroup — тогда группа выполняется
+#     ПOСЛЕДОВАТЕЛЬНО на одном воркере, остальные тесты параллелятся как обычно.
+#     """
+#     if _xdist_active(config):
+#         # включаем режим распределения по группам
+#         if getattr(config.option, "dist", None) != "loadgroup":
+#             config.option.dist = "loadgroup"
+#
+#         for item in items:
+#             if item.get_closest_marker("isolated"):
+#                 item.add_marker(pytest.mark.xdist_group("__isolated__"))
+
+####
+# def pytest_sessionstart(session):
+#     session.config._isolated_tests = []
+#
+# def pytest_collection_modifyitems(session, config, items):
+#     isolated = [i for i in items if i.get_closest_marker("isolated")]
+#     others = [i for i in items if i not in isolated]
+#     session.config._isolated_tests = isolated
+#     items[:] = others  # убираем изолированные из основного прохода
+#
+# def pytest_sessionfinish(session, exitstatus):
+#     isolated = getattr(session.config, "_isolated_tests", [])
+#     if isolated and not os.getenv("RUNNING_ISOLATED"):
+#         env = os.environ.copy()
+#         env["RUNNING_ISOLATED"] = "1"
+#         cmd = ["pytest", "-m", "isolated", "-s", "-v"]
+#         if session.config.option.numprocesses:
+#             cmd.append("--maxfail=1")
+#         subprocess.run(cmd, check=False, env=env)
+#
+# def pytest_deselected(items):
+#     pass
+#
+# def pytest_report_collectionfinish(config, start_path, items):
+#     return f"collected {len(items)} test items"
+#  <-- for parallel test
+
 def pytest_addoption(parser: pytest.Parser) -> None:
     parser.addoption('--grpc-mock', action='store_true', default=False)
 
@@ -97,53 +144,28 @@ def server_cfg(request: FixtureRequest) -> ServerConfig:
     else:
         chosen = raw or 'chromium'
     config  = ServerConfig(
-        browser_name=str(chosen).lower(),
-        _env_file=".env"
+        browser_name=str(chosen).lower()
     )
-    print(f'\nFROM conftest server_cfg: config.frontend_url={config.frontend_url}\nconfig.auth_url={config.auth_url}\nconfig.auth_db_url={config.auth_db_url}')
+
+    print(f'\nFROM conftest')
+    print(f'\nFROM conftest')
+    print(f'server_cfg.spend_db_url={config.spend_db_url}')
+    print(f'server_cfg.userdata_db_url={config.userdata_db_url}')
+    print(f'server_cfg.auth_db_url={config.auth_db_url}')
+
+    print(f'server_cfg.frontend_url={config.frontend_url}')
+    print(f'server_cfg.gateway_url={config.gateway_url}')
+    print(f'server_cfg.auth_url={config.auth_url}')
+
+    print(f'server_cfg.kafka_address={config.kafka_address}')
+    print(f'server_cfg.soap_url={config.soap_url}')
+    print(f'server_cfg.graphql_url={config.graphql_url}')
+
     return config
 
 @pytest.fixture(scope="session")
 def grpc_cfg(request: FixtureRequest) -> GRPCConfig:
-    return GRPCConfig(_env_file=".env")
-
-# @pytest.fixture(scope="session")
-# def client_cfg(auth_client: OAuthClient, register_new_user) -> ClientConfig:
-#     username, password = register_new_user
-#     return ClientConfig(
-#         username=username,
-#         password=SecretStr(password),
-#     )
-
-# @pytest.fixture
-# def username(client_cfg: ClientConfig) -> str:
-#     return client_cfg.username
-
-# @pytest.fixture(scope="session")
-# def browser(request: FixtureRequest) -> Generator[WebDriver, None, None]:
-#     browser_name = request.config.getoption('browser')
-#     browser = None
-#     if browser_name == 'chrome':
-#         browser = webdriver.Chrome()
-#     elif browser_name == 'firefox':
-#         options = FirefoxOptions()
-#         browser = webdriver.Firefox(options=options)
-#
-#     browser.set_window_size(1280, 800)
-#
-#     yield browser
-#
-#     browser.quit()
-
-# @pytest.fixture(scope="session")
-# def auth_browser(browser: WebDriver, login_page: LoginPage, client_cfg: ClientConfig) -> WebDriver:
-#     login_page.open()
-#     login_page.enter_username(client_cfg.username)
-#     login_page.enter_password(client_cfg.password.get_secret_value())
-#     login_page.click_login_button()
-#     return browser
-
-
+    return GRPCConfig()
 
 @pytest.fixture(scope='session')
 def kafka(server_cfg: ServerConfig) -> Generator[KafkaClient, Any, None]:

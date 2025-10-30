@@ -9,7 +9,8 @@ from faker import Faker
 from niffler_tests_python.clients.kafka_client import KafkaClient
 from niffler_tests_python.clients.oauth_client import OAuthClient
 from niffler_tests_python.databases.user_db import UserDB
-from niffler_tests_python.model.userdata import UserModelDB, UserName
+from niffler_tests_python.model.rest_model.userdata import UserName
+from niffler_tests_python.model.db_model.userdata_db import UserModelDB
 from niffler_tests_python.utils.waiters import wait_until_timeout
 
 
@@ -18,13 +19,15 @@ from niffler_tests_python.utils.waiters import wait_until_timeout
 @allure.story("Kafka")
 @allure.tag("positive")
 @allure.title("Сообщение о регистрации нового пользователя публикуется в Kafka после успешной регистрации")
+@pytest.mark.isolated
 def test_message_should_be_produced_to_kafka_after_successful_registration(
         auth_client: OAuthClient,
         kafka: KafkaClient,
         user_db: UserDB,
-        fake: Faker
+        fake: Faker,
+        worker_id: str
 ):
-    username = fake.user_name()
+    username = f"{fake.user_name()}_{worker_id}"
     password = fake.password(special_chars=False)
 
     topic_partitions = kafka.subscribe_listen_new_offsets('users')
@@ -34,7 +37,7 @@ def test_message_should_be_produced_to_kafka_after_successful_registration(
         assert result.status_code == 201, "Регистрация неуспешна"
 
     with step("Получить новое сообщение из Kafka"):
-        event = kafka.log_msg_and_json(topic_partitions)
+        event = kafka.log_msg_and_json(topic_partitions, worker_id)
 
     with step("Проверить, что сообщение из Kafka существует"):
         assert event not in ('', b'')
@@ -53,9 +56,10 @@ def test_user_registration_message_should_be_consumed_by_kafka(
         auth_client: OAuthClient,
         kafka: KafkaClient,
         user_db: UserDB,
-        fake: Faker
+        fake: Faker,
+        worker_id: str
 ):
-    username = fake.user_name()
+    username = f"{fake.user_name()}_{worker_id}"
 
     with step("Отправить сообщение о регистрации нового пользователя в Kafka"):
         kafka.produce_message('users', {'username': username})
@@ -79,14 +83,15 @@ def test_multiple_registration_messages_should_be_consumed_by_kafka(
         auth_client: OAuthClient,
         kafka: KafkaClient,
         user_db: UserDB,
-        fake: Faker
+        fake: Faker,
+        worker_id: str
 ):
     all_users_db: List[UserModelDB] = []
     added_username: List[str] = []
 
     with step("Сформировать и отправить несколько сообщений с пользователями в Kafka"):
         for _ in range(user_count):
-            username = fake.user_name()
+            username = f"{fake.user_name()}_{worker_id}"
             added_username.append(username)
             kafka.produce_message('users', {'username': username})
             user_from_db = wait_until_timeout(user_db.get_userdata_by_username)(username)
@@ -107,9 +112,10 @@ def test_send_to_kafka_duplicate_user_registration_message(
         auth_client: OAuthClient,
         kafka: KafkaClient,
         user_db: UserDB,
-        fake: Faker
+        fake: Faker,
+        worker_id: str
 ):
-    username = fake.user_name()
+    username = f"{fake.user_name()}_{worker_id}"
 
     with step("Отправить сообщение о пользователе в Kafka и дождаться его появления в базе"):
         kafka.produce_message('users', {'username': username})

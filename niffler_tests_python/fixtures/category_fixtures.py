@@ -8,7 +8,7 @@ from faker import Faker
 from pytest import FixtureRequest
 from niffler_tests_python.clients.category_client import CategoryApiClient
 from niffler_tests_python.databases.spend_db import SpendDB
-from niffler_tests_python.model.category import CategoryModel
+from niffler_tests_python.model.rest_model.category import CategoryModel
 
 
 @pytest.fixture
@@ -16,7 +16,7 @@ def category(
         request: FixtureRequest,
         category_client: CategoryApiClient,
         spend_db: SpendDB
-) -> Generator[CategoryModel, Any, None]:
+) -> CategoryModel:
     category_name = request.param
     api_current_categories = category_client.get_all_categories()
     current_categories = {category.name: category for category in api_current_categories}
@@ -24,8 +24,12 @@ def category(
         added_category = current_categories[category_name]
     else:
         added_category = category_client.add_category(category_name=category_name)
-    yield added_category
-    spend_db.delete_category(added_category.id)
+
+    def fin():
+        spend_db.delete_category(added_category.id)
+
+    request.addfinalizer(fin)
+    return added_category
 
 @pytest.fixture
 def new_category_name(

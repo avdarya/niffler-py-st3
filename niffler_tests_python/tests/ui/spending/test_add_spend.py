@@ -5,7 +5,8 @@ import pytest
 
 from niffler_tests_python.clients.spend_client import SpendApiClient
 from niffler_tests_python.databases.spend_db import SpendDB
-from niffler_tests_python.model.category import CategoryModel
+from niffler_tests_python.model.rest_model.category import CategoryModel
+from niffler_tests_python.model.enums.currency_title import CurrencyTitle
 from niffler_tests_python.utils.api_checkers import assert_spend_record_exists
 from niffler_tests_python.utils.helpers import wait_for_spend_row, is_text_match_spend_row
 from niffler_tests_python.utils.marks import TestData, Pages
@@ -22,10 +23,10 @@ from niffler_tests_python.web_pages.components.HeaderComponent import HeaderComp
 @Pages.go_to_main_page
 @TestData.category("add spend")
 @pytest.mark.parametrize("amount, currency, spend_date, description", [
-    ("10.01", "RUB", "12/09/2024", "test add spending"),
-    ("501", "KZT", "01/15/2025", "test add spending"),
-    ("0.01", "EUR", "04/09/2025", "test add spending"),
-    ("3", "USD", "06/21/2025", "test add spending")
+    ("10.01", CurrencyTitle.RUB.value, "12/09/2024", "test add spending"),
+    ("501", CurrencyTitle.KZT.value, "01/15/2025", "test add spending"),
+    ("0.01", CurrencyTitle.EUR.value, "04/09/2025", "test add spending"),
+    ("3", CurrencyTitle.USD.value, "06/21/2025", "test add spending")
 ])
 def test_add_spending(
         user: tuple[str, str],
@@ -35,6 +36,7 @@ def test_add_spending(
         spend_client: SpendApiClient,
         category: CategoryModel,
         spend_db: SpendDB,
+        cleanup_spends: None,
         amount: str,
         currency: str,
         spend_date: str,
@@ -99,9 +101,6 @@ def test_add_spending(
     with allure.step('Получаем данные добавленной траты из БД'):
         db_spend = spend_db.get_spend(api_spend.id)
         db_category = spend_db.get_user_category_by_name(user[0], category_name)
-
-    with allure.step('Удаляем добавленную трату'):
-        spend_client.delete_spend([api_spend.id])
 
     with allure.step('Проверяем корректность добавления траты'):
         with allure.step('Проверяем отображение добавленной траты в UI'):

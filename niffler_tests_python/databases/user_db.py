@@ -5,7 +5,7 @@ from sqlalchemy import func
 
 
 from niffler_tests_python.databases.userdata_base_db import UserdataBaseDB
-from niffler_tests_python.model.userdata import UserModelDB
+from niffler_tests_python.model.db_model.userdata_db import UserModelDB
 from niffler_tests_python.settings.server_config import ServerConfig
 
 
@@ -32,8 +32,12 @@ class UserDB(UserdataBaseDB):
             sort: str,
             direction: str = 'ASC',
             search_query: str = '',
+            exclude: str = None,
     ) -> list[UserModelDB]:
         statement = select(UserModelDB)
+
+        if exclude:
+            statement = statement.where(UserModelDB.username != exclude)
 
         if search_query:
             statement = statement.where(UserModelDB.username.ilike(f'%{search_query}%'))
@@ -47,10 +51,13 @@ class UserDB(UserdataBaseDB):
 
         return self.execute(self.engine, statement, 'all')
 
-    def get_users_count(self, search_query: str = '') -> int:
+    def get_users_count(self, search_query: str = '', exclude: str = None) -> int:
         statement = select(func.count()).select_from(UserModelDB)
 
         if search_query:
             statement = statement.where(UserModelDB.username.ilike(f'%{search_query}%'))
+
+        if exclude:
+            statement = statement.where(UserModelDB.username != exclude)
 
         return self.execute(self.engine, statement, 'scalar').one()

@@ -4,7 +4,8 @@ from datetime import datetime
 from dateutil.tz import tz
 from niffler_tests_python.clients.spend_client import SpendApiClient
 from niffler_tests_python.databases.spend_db import SpendDB
-from niffler_tests_python.model.spend import SpendModelAdd, SpendModel
+from niffler_tests_python.model.enums.currency_title import CurrencyTitle
+from niffler_tests_python.model.rest_model.spend import SpendModelAdd, SpendModel
 from niffler_tests_python.utils.marks import Pages, TestData
 from niffler_tests_python.utils.helpers import wait_for_spend_row, is_text_match_spend_row
 from niffler_tests_python.web_pages.MainPage import MainPage
@@ -20,12 +21,12 @@ from niffler_tests_python.web_pages.SpendingPage import SpendingPage
 @TestData.spend(SpendModelAdd(
     amount=203.01,
     description="test edit spend",
-    currency="USD",
-    spendDate="2025-06-26T21:00:00.000+00:00",
+    currency=CurrencyTitle.USD.value,
+    spendDate="2025-06-26",
     category={"name": "edit spend"}
 ))
 @pytest.mark.parametrize("amount, currency, new_category, spend_date, description", [
-    ("456", "EUR", "after edit spend", "02/09/2025", "spending for update")
+    ("456", CurrencyTitle.EUR.value, "after edit spend", "02/09/2025", "spending for update")
 ])
 def test_edit_spending(
         user: tuple[str, str],
@@ -41,7 +42,7 @@ def test_edit_spending(
         description: str,
 ):
     with allure.step('Открываем трату для редактирования'):
-        spend_row = main_page.get_spend_row_by_id(spend.id)
+        spend_row = wait_for_spend_row(main_page, spend.id)
         main_page.click_edit_spend(spend_row)
 
     spending_page.expected_spend_url(spend.id)

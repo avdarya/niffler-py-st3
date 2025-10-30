@@ -10,13 +10,13 @@ class StatByCategoryGqlResponse(BaseModel):
     firstSpendDate: datetime
     lastSpendDate: datetime
 
-class StatResponse(BaseModel):
+class StatGqlResponse(BaseModel):
     total: float
     currency: str
     statByCategories: list[StatByCategoryGqlResponse]
 
 class DataGqlResponse(BaseModel):
-    stat: StatResponse
+    stat: StatGqlResponse
 
 class StatisticsGqlResponse(BaseModel):
     data: DataGqlResponse

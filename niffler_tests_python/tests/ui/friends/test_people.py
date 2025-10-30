@@ -1,7 +1,9 @@
 import allure
+import pytest
 
 from niffler_tests_python.clients.user_client import UserApiClient
-from niffler_tests_python.model.userdata import UserModelDB, UserFriendshipModel
+from niffler_tests_python.model.rest_model.userdata import UserFriendshipModel
+from niffler_tests_python.model.db_model.userdata_db import UserModelDB
 from niffler_tests_python.utils.marks import Pages, TestData
 from niffler_tests_python.web_pages.PeopleAllPage import PeopleAllPage
 from niffler_tests_python.web_pages.PeopleFriendsPage import PeopleFriendsPage
@@ -14,6 +16,7 @@ from niffler_tests_python.web_pages.PeopleFriendsPage import PeopleFriendsPage
 @allure.title("Проверка отображения списка пользователей на странице 'Люди'")
 @Pages.go_to_people_all_after_list_people
 @TestData.people_list(15)
+@pytest.mark.isolated
 def test_people_list_viewing(
         people_list: list[UserModelDB],
         people_all_page: PeopleAllPage,
@@ -39,6 +42,7 @@ def test_people_list_viewing(
 @allure.title("Проверка отображения списка друзей на странице 'Друзья'")
 @Pages.go_to_people_friends_after_list_friend
 @TestData.friend_list(15)
+@pytest.mark.isolated
 def test_friends_list_viewing(
         friend_list: list[UserModelDB],
         people_friends_page: PeopleFriendsPage,
