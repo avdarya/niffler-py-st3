@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import xmlschema
-from jinja2 import Environment, PackageLoader, select_autoescape, FileSystemLoader
+from jinja2 import Environment, select_autoescape, FileSystemLoader
 from xmlschema import XMLSchema11
 
 

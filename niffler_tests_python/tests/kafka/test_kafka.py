@@ -15,7 +15,7 @@ from niffler_tests_python.utils.waiters import wait_until_timeout
 
 
 @allure.epic("Авторизация")
-@allure.feature("Регистрация пользователя")
+@allure.feature("Регистрация")
 @allure.story("Kafka")
 @allure.tag("positive")
 @allure.title("Сообщение о регистрации нового пользователя публикуется в Kafka после успешной регистрации")
@@ -25,10 +25,12 @@ def test_message_should_be_produced_to_kafka_after_successful_registration(
         kafka: KafkaClient,
         user_db: UserDB,
         fake: Faker,
-        worker_id: str
+        worker_id: str,
+        cleanup_user
 ):
     username = f"{fake.user_name()}_{worker_id}"
     password = fake.password(special_chars=False)
+    cleanup_user(username)
 
     topic_partitions = kafka.subscribe_listen_new_offsets('users')
 
@@ -57,9 +59,11 @@ def test_user_registration_message_should_be_consumed_by_kafka(
         kafka: KafkaClient,
         user_db: UserDB,
         fake: Faker,
-        worker_id: str
+        worker_id: str,
+        cleanup_user
 ):
     username = f"{fake.user_name()}_{worker_id}"
+    cleanup_user(username)
 
     with step("Отправить сообщение о регистрации нового пользователя в Kafka"):
         kafka.produce_message('users', {'username': username})
@@ -84,7 +88,8 @@ def test_multiple_registration_messages_should_be_consumed_by_kafka(
         kafka: KafkaClient,
         user_db: UserDB,
         fake: Faker,
-        worker_id: str
+        worker_id: str,
+        cleanup_user
 ):
     all_users_db: List[UserModelDB] = []
     added_username: List[str] = []
@@ -92,6 +97,7 @@ def test_multiple_registration_messages_should_be_consumed_by_kafka(
     with step("Сформировать и отправить несколько сообщений с пользователями в Kafka"):
         for _ in range(user_count):
             username = f"{fake.user_name()}_{worker_id}"
+            cleanup_user(username)
             added_username.append(username)
             kafka.produce_message('users', {'username': username})
             user_from_db = wait_until_timeout(user_db.get_userdata_by_username)(username)
@@ -113,10 +119,11 @@ def test_send_to_kafka_duplicate_user_registration_message(
         kafka: KafkaClient,
         user_db: UserDB,
         fake: Faker,
-        worker_id: str
+        worker_id: str,
+        cleanup_user
 ):
     username = f"{fake.user_name()}_{worker_id}"
-
+    cleanup_user(username)
     with step("Отправить сообщение о пользователе в Kafka и дождаться его появления в базе"):
         kafka.produce_message('users', {'username': username})
         wait_until_timeout(user_db.get_userdata_by_username)(username)

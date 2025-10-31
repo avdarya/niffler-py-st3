@@ -1,0 +1,4 @@
+# file: /Users/daracydenova/Desktop/AQA-python-advanced/niffler-py-st3-avdarya/niffler_tests_python/templates/soap/read_templates.py
+# hypothesis_version: 6.138.2
+
+['/xsd/envelope.xsd', 'ASC', 'addressed_username', 'direction', 'html', 'operation', 'operation_xsd', 'page', 'sandbox', 'search_query', 'size', 'soap', 'sort', 'username', 'w', 'xml']

@@ -9,7 +9,7 @@ from niffler_tests_python.utils.marks import TestData
 
 
 @allure.epic('Траты')
-@allure.feature('Редактирование трат')
+@allure.feature('Редактирование траты')
 @allure.story('API')
 @allure.tag('positive')
 @allure.title('Пользователь может отредактировать трату и убедиться, что изменения корректно сохранены в API и БД')

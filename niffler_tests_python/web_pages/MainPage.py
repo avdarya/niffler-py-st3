@@ -1,8 +1,6 @@
-import json
+import time
 
-from allure_commons.types import AttachmentType
-from playwright.sync_api import Page, expect, Locator
-from selenium.common import NoSuchElementException
+from playwright.sync_api import Page, expect, Locator, TimeoutError
 from urllib.parse import urljoin
 
 from niffler_tests_python.settings.server_config import ServerConfig
@@ -31,12 +29,9 @@ class MainPage(BasePage):
         self._page.reload()
 
     def get_spend_row_by_id(self, spend_id: str) -> Locator | None:
-        try:
-            img_lonely_niffler = self.locators.img_lonely_niffler(self._page)
-            if img_lonely_niffler.is_visible():
-                return None
-        except NoSuchElementException:
-            pass
+        img_lonely_niffler = self.locators.img_lonely_niffler(self._page)
+        if img_lonely_niffler.is_visible():
+            return None
         while True:
             row = self.locators.spend_row_by_id(self._page, spend_id)
             row.wait_for(state="visible", timeout=5000)
@@ -81,14 +76,22 @@ class MainPage(BasePage):
         # allure.attach(json.dumps(spend_ids, indent=2), name='Selected spend ids', attachment_type=AttachmentType.JSON)
         return spend_ids
 
-    def get_spend_ids(self) -> list[str]:
+    def get_spend_ids(self, expected_api_ids: list[str] | None = None, timeout: int = 5000) -> list[str]:
+        self._page.wait_for_selector(self.locators.first_category_cell(), timeout=timeout)
+        deadline = time.time() + 5
         spend_ids = []
-        self._page.wait_for_selector(self.locators.first_category_cell(), timeout=10000)
-        spend_rows = self.locators.rows(self._page)
-        for row in spend_rows:
-            category_cell = self.locators.category_cell(row)
-            spend_id = category_cell.get_attribute("id").replace("enhanced-table-checkbox-", "")
-            spend_ids.append(spend_id)
+        while time.time() < deadline:
+            spend_rows = self.locators.rows(self._page)
+            spend_ids = []
+            for row in spend_rows:
+                category_cell = self.locators.category_cell(row)
+                spend_id = category_cell.get_attribute("id").replace("enhanced-table-checkbox-", "")
+                spend_ids.append(spend_id)
+
+            if expected_api_ids is None or spend_ids == expected_api_ids:
+                return spend_ids
+
+            self._page.wait_for_timeout(500)
         # allure.attach(json.dumps(spend_ids, indent=2), name='Spend ids', attachment_type=AttachmentType.JSON)
         return spend_ids
 
@@ -96,24 +99,28 @@ class MainPage(BasePage):
         self.locators.popup_cancel_button(self._page).click()
 
     def click_next_button(self) -> None:
-        self.locators.next_button(self._page).click()
-        self._wait_table_updated()
-
-    def click_previous_button(self) -> None:
-        first_row = self._page.locator('tbody tr').first
+        first_row = self.locators.row(self._page)
         first_text = first_row.text_content() if first_row.is_visible() else None
-
-        self.locators.previous_button(self._page).click()
-
+        self.locators.next_button(self._page).click()
         if first_text:
             expect(first_row).not_to_have_text(first_text, timeout=5000)
-        self._wait_table_updated()
+        self._page.wait_for_load_state("networkidle")
+        self._page.wait_for_timeout(1000)
+
+    def click_previous_button(self) -> None:
+        first_row = self.locators.row(self._page)
+        first_text = first_row.text_content() if first_row.is_visible() else None
+        self.locators.previous_button(self._page).click()
+        if first_text:
+            expect(first_row).not_to_have_text(first_text, timeout=5000)
+        self._page.wait_for_load_state("networkidle")
+        self._page.wait_for_timeout(1000)
 
     def enter_search_query(self, query: str) -> None:
         search_input = self.locators.search_input(self._page)
         search_input.type(query)
         search_input.press('Enter')
-        self._wait_table_updated()
+        self._page.wait_for_timeout(1000)
 
     def get_search_query_input(self) -> str:
         return self.locators.search_input(self._page).input_value()
@@ -123,7 +130,7 @@ class MainPage(BasePage):
 
     def select_period_value(self, period: str) -> None:
         self.locators.period_option(self._page, period).click()
-        self._wait_table_updated()
+        self._page.wait_for_timeout(1000)
 
     def get_period_input(self) -> str:
         return self.locators.period_input(self._page).input_value()
@@ -133,7 +140,7 @@ class MainPage(BasePage):
 
     def select_currency_value(self, currency: str) -> None:
         self.locators.currency_option(self._page, currency).click()
-        self._wait_table_updated()
+        self._page.wait_for_timeout(1000)
 
     def get_currency_input(self) -> str:
         return self.locators.currency_input(self._page).input_value()
@@ -141,13 +148,3 @@ class MainPage(BasePage):
     def is_correct_url(self):
         expect(self._page).to_have_url(self.__url)
 
-    def _wait_table_updated(self, timeout: int = 5000):
-        first_row = self.locators.row(self._page)
-        if not first_row.is_visible():
-            self.locators.row(self._page).wait_for(timeout=timeout)
-            return
-        old_text = first_row.text_content()
-        try:
-            expect(first_row).not_to_have_text(old_text, timeout=timeout)
-        except AssertionError:
-            self._page.wait_for_load_state("networkidle", timeout=timeout)

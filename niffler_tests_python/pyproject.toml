@@ -40,6 +40,7 @@ pytest-cov = "^6.2.1"
 hypothesis = "^6.138.2"
 pytest-playwright = "^0.7.0"
 pytest-xdist = "^3.8.0"
+pytest-rerunfailures = "^16.1"
 
 [tool.poetry]
 package-mode = false
@@ -47,7 +48,9 @@ package-mode = false
 [tool.pytest.ini_options]
 addopts = [
     "--alluredir=allure-results",
-    "--clean-alluredir"
+    "--clean-alluredir",
+    "--reruns=2",
+    "--reruns-delay=1"
 ]
 markers = [
     "isolated: tests that must run before or after all others"

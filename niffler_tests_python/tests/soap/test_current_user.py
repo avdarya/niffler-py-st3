@@ -6,7 +6,7 @@ from xmlschema import XMLSchemaChildrenValidationError
 from niffler_tests_python.databases.user_db import UserDB
 from niffler_tests_python.model.enums.currency_title import CurrencyTitle
 from niffler_tests_python.model.enums.friendship_status import  FriendshipAPIStatus
-from niffler_tests_python.templates.soap.read_templates import xml_current_user, xsd_response, xml_all_users_page
+from niffler_tests_python.templates.soap.read_templates import xml_current_user, xsd_response
 from niffler_tests_python.utils.sessions import SoapSession
 from niffler_tests_python.utils.soap_parser import parsed_xml_user
 from niffler_tests_python.utils.waiters import wait_until_timeout

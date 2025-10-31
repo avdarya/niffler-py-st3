@@ -141,7 +141,7 @@ def test_user_can_decline_invitation(
         assert len(api_friends_all['content']) == 0
 
 @allure.epic("Друзья")
-@allure.feature("Удаление друга")
+@allure.feature("Удаление из друзей")
 @allure.story("UI")
 @allure.tag("positive")
 @allure.title("Пользователь может удалить друга из списка")

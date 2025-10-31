@@ -49,7 +49,7 @@ class RegisterPage(BasePage):
         expect(self.locators.success_message(self._page)).to_be_visible()
 
     def is_show_passwords_should_by_equal(self):
-        expect(self.locators.passwords_not_equal_message(self._page)).to_be_visible()
+        expect(self.locators.passwords_not_equal_message(self._page)).to_be_visible(timeout=2000)
 
     def is_show_success_signin_button(self):
         expect(self.locators.success_signin_button(self._page)).to_be_visible()

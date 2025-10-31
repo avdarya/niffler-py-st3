@@ -35,7 +35,7 @@ def test_search_spend_by_description(spend: SpendModel, main_page: MainPage, spe
         api_spend_ids = [spend_item["id"] for spend_item in api_search_query["content"]]
 
     with allure.step('Получаем идентификаторы трат в UI после поиска'):
-        search_spend_ids = main_page.get_spend_ids()
+        search_spend_ids = main_page.get_spend_ids(api_spend_ids)
 
     with allure.step('Получаем введённый текст поиска'):
         search_input_text = main_page.get_search_query_input()
@@ -75,7 +75,7 @@ def test_search_spend_by_category(spend: SpendModel, main_page: MainPage, spend_
         api_spend_ids = [spend_item["id"] for spend_item in api_search_query["content"]]
 
     with allure.step('Получаем идентификаторы трат в UI после поиска'):
-        search_spend_ids = main_page.get_spend_ids()
+        search_spend_ids = main_page.get_spend_ids(api_spend_ids)
 
     with allure.step('Получаем введённый текст поиска'):
         search_input_text = main_page.get_search_query_input()
@@ -98,22 +98,22 @@ def test_search_spend_by_category(spend: SpendModel, main_page: MainPage, spend_
     {
         "amount": 8989.05,
         "description": "test search spend by MONTH",
-        "currency": CurrencyTitle.RUB.value,
-        "spendDate": PeriodTitle.MONTH.value,
+        "currency": "RUB",
+        "spendDate": "MONTH",
         "category": {"name": "category for search period"}
     },
     {
         "amount": 8989.05,
         "description": "test search spend by WEEK",
-        "currency": CurrencyTitle.RUB.value,
-        "spendDate": PeriodTitle.WEEK.value,
+        "currency": "RUB",
+        "spendDate": "WEEK",
         "category": {"name": "category for search period"}
     },
     {
         "amount": 8989.05,
         "description": "test search spend by TODAY",
-        "currency": CurrencyTitle.RUB.value,
-        "spendDate": PeriodTitle.TODAY.value,
+        "currency": "RUB",
+        "spendDate": "TODAY",
         "category": {"name": "category for search period"}
     }
 ], indirect=True)
@@ -137,7 +137,7 @@ def test_search_spend_by_period(
         api_spend_ids = [spend_item["id"] for spend_item in api_search["content"]]
 
     with allure.step('Получаем идентификаторы трат в UI после поиска'):
-        search_spend_ids = main_page.get_spend_ids()
+        search_spend_ids = main_page.get_spend_ids(api_spend_ids)
 
     with allure.step('Получаем выбранный период в UI'):
         period_input_text = main_page.get_period_input()
@@ -174,7 +174,7 @@ def test_search_spend_by_currency(
         api_spend_ids = [spend_item["id"] for spend_item in api_search["content"]]
 
     with allure.step('Получаем идентификаторы трат в UI после поиска'):
-        search_spend_ids = main_page.get_spend_ids()
+        search_spend_ids = main_page.get_spend_ids(api_spend_ids)
 
     with allure.step('Получаем выбранную валюту в UI'):
         currency_input_text = main_page.get_currency_input()

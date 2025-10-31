@@ -20,7 +20,7 @@ def test_next_page(main_page: MainPage, spend_client: SpendApiClient):
         api_spend_ids = [spend_item["id"] for spend_item in api_next_page["content"]]
 
     with allure.step('Сохраняем идентификаторы трат следующей страницы из UI'):
-        ui_spend_ids = main_page.get_spend_ids()
+        ui_spend_ids = main_page.get_spend_ids(api_spend_ids)
 
     with allure.step('Проверяем корректность данных следующей страницы'):
         with allure.step('Количество трат на следующей странице в API совпадает с количеством в UI'):
@@ -47,7 +47,7 @@ def test_previous_page(main_page: MainPage, spend_client: SpendApiClient):
         api_spend_ids = [spend_item["id"] for spend_item in api_previous_page["content"]]
 
     with allure.step('Сохраняем идентификаторы трат предыдущей страницы из UI'):
-        ui_spend_ids = main_page.get_spend_ids()
+        ui_spend_ids = main_page.get_spend_ids(api_spend_ids)
 
     with allure.step('Проверяем корректность данных предыдущей страницы'):
         with allure.step('Количество трат на предыдущей странице в API совпадает с количеством в UI'):

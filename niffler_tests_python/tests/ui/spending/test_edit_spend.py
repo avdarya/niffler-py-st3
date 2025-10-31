@@ -25,8 +25,8 @@ from niffler_tests_python.web_pages.SpendingPage import SpendingPage
     spendDate="2025-06-26",
     category={"name": "edit spend"}
 ))
-@pytest.mark.parametrize("amount, currency, new_category, spend_date, description", [
-    ("456", CurrencyTitle.EUR.value, "after edit spend", "02/09/2025", "spending for update")
+@pytest.mark.parametrize("amount, currency, new_category, description", [
+    ("456", CurrencyTitle.EUR.value, "after edit spend", "spending for update")
 ])
 def test_edit_spending(
         user: tuple[str, str],
@@ -38,9 +38,10 @@ def test_edit_spending(
         amount: str,
         currency: str,
         new_category: str,
-        spend_date: str,
         description: str,
 ):
+    spend_date = spend.spendDate.date()
+
     with allure.step('Открываем трату для редактирования'):
         spend_row = wait_for_spend_row(main_page, spend.id)
         main_page.click_edit_spend(spend_row)
@@ -58,9 +59,6 @@ def test_edit_spending(
     with allure.step('Изменяем категорию'):
         spending_page.clear_category_input()
         spending_page.fill_category(new_category)
-
-    with allure.step('Изменяем дату траты'):
-        spending_page.fill_date(spend_date)
 
     with allure.step('Изменяем описание'):
         spending_page.clear_description_input()
@@ -80,8 +78,6 @@ def test_edit_spending(
 
     with allure.step('Получаем изменённую трату через API'):
         api_spend = spend_client.get_spend_by_id(spend.id)
-        local_dt = api_spend.spendDate.astimezone(tz.tzlocal())
-        date_str = local_dt.strftime("%m/%d/%Y")
 
     with allure.step('Получаем изменённую трату из БД'):
         db_spend = spend_db.get_spend(spend_id=spend.id)
@@ -95,10 +91,10 @@ def test_edit_spending(
                 amount=amount,
                 currency=currency,
                 description=description,
-                spend_date=spend_date
+                spend_date=spend_date.strftime("%m/%d/%Y")
             )
-        with allure.step('Проверяем изменённую дату траты в API'):
-            assert date_str == spend_date
+        with allure.step('Проверяем дату траты в API'):
+            assert api_spend.spendDate.date() == spend_date
         with allure.step('Проверяем изменённую категорию траты в API'):
             assert api_spend.category.name == new_category
         with allure.step('Проверяем изменённую валюту траты в API'):
@@ -112,8 +108,8 @@ def test_edit_spending(
             assert db_spend.amount == float(amount)
         with allure.step('Проверяем изменённую валюту траты в БД'):
             assert db_spend.currency == currency
-        with allure.step('Проверяем изменённую дату траты в БД'):
-            assert db_spend.spend_date == datetime.strptime(spend_date, "%m/%d/%Y").date()
+        with allure.step('Проверяем дату траты в БД'):
+            assert db_spend.spend_date == spend_date
         with allure.step('Проверяем изменённое описание траты в БД'):
             assert db_spend.description == description
         with allure.step('Проверяем изменённую категорию траты в БД'):

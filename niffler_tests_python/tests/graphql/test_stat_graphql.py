@@ -5,7 +5,6 @@ import pytest
 from niffler_tests_python.clients.graphql_client import GraphQLClient
 from niffler_tests_python.clients.spend_client import SpendApiClient
 from niffler_tests_python.databases.spend_db import SpendDB
-from niffler_tests_python.fixtures.client_fixtures import spend_db
 from niffler_tests_python.model.enums.currency_title import CurrencyTitle
 from niffler_tests_python.model.enums.period_title import PeriodTitle
 from niffler_tests_python.utils.graphql_loader import load_graphql_query
@@ -128,7 +127,6 @@ def test_stat_filters(
 def test_stat_empty_spend(
         graphql_client: GraphQLClient,
         user: tuple[str, str],
-        spend_db: SpendDB,
         spend_client: SpendApiClient,
         query_file: str,
         expected_total: float,

@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 
 from playwright.sync_api import Page, Locator
-from selenium.webdriver.common.by import By
 
 
 @dataclass(frozen=True)

@@ -3,7 +3,6 @@ from typing import Any
 from collections.abc import Generator
 
 from playwright.sync_api import Page, Browser, sync_playwright
-from pytest import FixtureDef
 
 from niffler_tests_python.settings.server_config import ServerConfig
 from niffler_tests_python.web_pages.LoginPage import LoginPage

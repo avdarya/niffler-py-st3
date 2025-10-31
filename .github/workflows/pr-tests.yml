@@ -73,7 +73,7 @@ jobs:
             -e SOAP_URL="$SOAP_URL" \
             -e CURRENCY_SERVICE_HOST="$CURRENCY_SERVICE_HOST" \
             -e CURRENCY_WIREMOCK_HOST="$CURRENCY_WIREMOCK_HOST" \
-            qaguru/niffler-py-tests:latest -s -v tests
+            qaguru/niffler-py-tests:latest tests
 
       - name: Add comment to PR with test result
         if: always()

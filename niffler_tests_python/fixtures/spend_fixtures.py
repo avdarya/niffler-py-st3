@@ -1,7 +1,7 @@
 import json
 import pytest
-from datetime import datetime, timedelta
-from typing import Any
+from datetime import datetime, timedelta, UTC
+from typing import Any, Callable
 from collections.abc import Generator
 from pytest import FixtureRequest
 
@@ -66,16 +66,16 @@ def spend(request: FixtureRequest, spend_client: SpendApiClient, spend_db: Spend
 def custom_date_spend(request: FixtureRequest, spend_client: SpendApiClient, spend_db: SpendDB) -> Generator[tuple[SpendModel, dict[str, str]], dict, None]:
     spend_param = request.param
     period = spend_param["spendDate"]
-    if period == PeriodTitle.MONTH.value:
+    if period == "MONTH":
         actual_date = datetime.now().replace(day=1).date().isoformat()
         spend_param["spendDate"] = actual_date
-    if period == PeriodTitle.WEEK.value:
+    if period == "WEEK":
         actual_date = (datetime.now() - timedelta(days=datetime.now().weekday())).date().isoformat()
         spend_param["spendDate"] = actual_date
-    if period == PeriodTitle.TODAY.value:
+    if period == "TODAY":
         actual_date = datetime.now().date().isoformat()
         spend_param["spendDate"] = actual_date
-    if period == PeriodTitle.ALL_TIME.value:
+    if period == "ALL_TIME":
         actual_date = (datetime.now().replace(day=1) - timedelta(days=1)).date().isoformat()
         spend_param["spendDate"] = actual_date
     added_spend = spend_client.add_spend(SpendModelAdd(**spend_param))
@@ -98,3 +98,11 @@ def cleanup_spends(
         spend_ids = [str(spend.id) for spend in user_spends]
         spend_client.delete_spend(spend_ids)
     request.addfinalizer(fin)
+
+
+@pytest.fixture
+def make_future_date() -> Callable[[int], str]:
+    def _make(days: int) -> str:
+        ft_date = datetime.now(UTC) + timedelta(days=days)
+        return ft_date.date().isoformat()
+    return _make

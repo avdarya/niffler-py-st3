@@ -1,6 +1,4 @@
-import datetime
 import pytest
-from typing import Callable
 from faker import Faker
 from pytest import FixtureRequest
 from niffler_tests_python.clients.oauth_client import OAuthClient
@@ -65,8 +63,11 @@ def register_new_user(
     return username, password
 
 @pytest.fixture
-def make_future_date() -> Callable[[int], str]:
-    def _make(days: int) -> str:
-        ft_date = datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=days)
-        return ft_date.date().isoformat()
-    return _make
+def cleanup_user(auth_db, user_db, request):
+    usernames: list[str] = []
+    def add_username(name: str):
+        usernames.append(name)
+    yield add_username
+    for username in usernames:
+        user_db.delete_user(username)
+        auth_db.delete_by_username(username)

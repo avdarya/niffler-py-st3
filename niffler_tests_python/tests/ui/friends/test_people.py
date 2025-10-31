@@ -9,7 +9,7 @@ from niffler_tests_python.web_pages.PeopleAllPage import PeopleAllPage
 from niffler_tests_python.web_pages.PeopleFriendsPage import PeopleFriendsPage
 
 
-@allure.epic("Авторизация")
+@allure.epic("Пользователи")
 @allure.feature("Просмотр списка пользователей")
 @allure.story("UI")
 @allure.tag("positive")
@@ -35,7 +35,7 @@ def test_people_list_viewing(
         assert len(api_names) == len(ui_usernames)
         assert set(ui_names) == set(api_names)
 
-@allure.epic("Авторизация")
+@allure.epic("Друзья")
 @allure.feature("Просмотр списка друзей")
 @allure.story("UI")
 @allure.tag("positive")

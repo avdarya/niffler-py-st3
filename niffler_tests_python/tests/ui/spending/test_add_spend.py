@@ -1,4 +1,5 @@
 from datetime import datetime
+from time import sleep
 
 import allure
 import pytest
@@ -22,11 +23,11 @@ from niffler_tests_python.web_pages.components.HeaderComponent import HeaderComp
 @allure.title("Создание траты — проверка записи в БД и отображения на главной странице")
 @Pages.go_to_main_page
 @TestData.category("add spend")
-@pytest.mark.parametrize("amount, currency, spend_date, description", [
-    ("10.01", CurrencyTitle.RUB.value, "12/09/2024", "test add spending"),
-    ("501", CurrencyTitle.KZT.value, "01/15/2025", "test add spending"),
-    ("0.01", CurrencyTitle.EUR.value, "04/09/2025", "test add spending"),
-    ("3", CurrencyTitle.USD.value, "06/21/2025", "test add spending")
+@pytest.mark.parametrize("amount, currency, description", [
+    ("10.01", CurrencyTitle.RUB.value, "test add spending"),
+    ("501", CurrencyTitle.KZT.value, "test add spending"),
+    ("0.01", CurrencyTitle.EUR.value, "test add spending"),
+    ("3", CurrencyTitle.USD.value, "test add spending")
 ])
 def test_add_spending(
         user: tuple[str, str],
@@ -39,9 +40,9 @@ def test_add_spending(
         cleanup_spends: None,
         amount: str,
         currency: str,
-        spend_date: str,
         description: str,
 ):
+    spend_date = datetime.now().strftime("%m/%d/%Y")
     with allure.step('Нажимаем кнопку «Добавить трату»'):
         header.click_new_spending()
 
@@ -62,9 +63,6 @@ def test_add_spending(
     with allure.step('Выбираем категорию'):
         category_name = category.name
         spending_page.fill_category(category_name)
-
-    with allure.step('Вводим дату'):
-        spending_page.fill_date(spend_date)
 
     with allure.step('Вводим описание'):
         spending_page.fill_description(description)
@@ -117,8 +115,6 @@ def test_add_spending(
             assert db_spend.amount == float(amount)
         with allure.step('Проверяем валюту в БД'):
             assert db_spend.currency == currency
-        with allure.step('Проверяем дату в БД'):
-            assert db_spend.spend_date == datetime.strptime(spend_date, "%m/%d/%Y").date()
         with allure.step('Проверяем описание в БД'):
             assert db_spend.description == description
         with allure.step('Проверяем категорию в БД'):

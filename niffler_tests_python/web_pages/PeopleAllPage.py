@@ -20,20 +20,7 @@ class PeopleAllPage(BasePage):
         self.__url = urljoin(str(server_cfg.frontend_url), '/people/all')
 
     def get_people_row(self, name: str) -> Locator | None:
-        # while True:
-        #     row = self.locators.people_row(self._page, name)
-        #     if row.count() > 0:
-        #         row.wait_for(state="visible", timeout=3000)
-        #         return row
-        #
-        #     if self.locators.next_button(self._page).get_attribute('disabled') is not None:
-        #         return None
-        #
-        #     first_row = self._page.locator('tbody tr').first
-        #     first_text = first_row.text_content()
-        #     self.click_next_button()
-        #     first_row.wait_for(state="visible")
-        #     expect(first_row).not_to_have_text(first_text, timeout=5000)
+        self._page.wait_for_timeout(1000)
         timeout_ms = 10_000
         deadline = time.time() + timeout_ms / 1000
 

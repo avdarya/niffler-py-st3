@@ -2,7 +2,6 @@ import time
 from urllib.parse import urljoin
 
 from playwright.sync_api import Page, expect, Locator
-from selenium.common import NoSuchElementException
 
 from niffler_tests_python.settings.server_config import ServerConfig
 from niffler_tests_python.web_pages.BasePage import BasePage
@@ -21,42 +20,17 @@ class PeopleFriendsPage(BasePage):
         self.__url = urljoin(str(server_cfg.frontend_url), '/people/friends')
 
     def get_friend_row(self, name: str) -> Locator | None:
-        # timeout = 10000
-        # polling_interval = 1000
-        # start = time.time()
-        #
-        # while time.time() - start < timeout / 1000:
-        #     try:
-        #         img_lonely_niffler = self.locators.img_lonely_niffler(self._page)
-        #         if img_lonely_niffler.is_visible():
-        #             return None
-        #     except NoSuchElementException:
-        #         pass
-        #
-        #     row = self.locators.friend_row(self._page, name)
-        #     if row.count() > 0:
-        #         row.wait_for(state="visible", timeout=5000)
-        #         return row
-        #
-        #     next_btn = self.locators.next_button(self._page)
-        #     if next_btn.is_enabled():
-        #         self.click_next_button()
-        #     else:
-        #         time.sleep(polling_interval / 1000)
-        # return None
-        deadline = time.time() + 5000 / 1000
-        # попробуем и вперёд, и назад — чтобы не зависеть от текущей страницы
+        self._page.wait_for_timeout(1000)
+        deadline = time.time() + 10000 / 1000
         direction = "next"
 
         while time.time() < deadline:
-            # 1) пустой экран — точно никого нет
             try:
                 if self.locators.img_lonely_niffler(self._page).is_visible():
                     return None
             except Exception:
                 pass
 
-            # 2) есть строка — стабилизируем и отдаём
             row = self.locators.friend_row(self._page, name)
             if row.count() > 0:
                 row = row.first
@@ -64,7 +38,6 @@ class PeopleFriendsPage(BasePage):
                 row.wait_for(state="visible", timeout=5000)
                 return row
 
-            # 3) пагинация
             first_row = self.locators.friend_rows_locator(self._page).first
             old_text = None
             try:
@@ -85,7 +58,6 @@ class PeopleFriendsPage(BasePage):
                 moved = True
                 direction = "prev"
             elif next_btn.is_enabled():
-                # если назад нельзя — снова попробуем вперёд
                 next_btn.click()
                 moved = True
 
