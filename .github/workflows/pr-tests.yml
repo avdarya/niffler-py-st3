@@ -3,6 +3,7 @@ name: pull-request-tests
 on:
   pull_request:
     types: [opened, reopened, synchronize]
+  workflow_dispatch:
 
 jobs:
   pr-tests:
@@ -62,7 +63,12 @@ jobs:
         id: tests
         run: |
           set +e
+          mkdir -p niffler_tests_python/allure-results
+          mkdir -p niffler_tests_python/allure-report
+          
           docker run --rm --network $NETWORK_NAME \
+            -v ${{ github.workspace }}/niffler_tests_python/allure-results:/niffler_tests_python/allure-results \
+            -v ${{ github.workspace }}/niffler_tests_python/allure-report:/niffler_tests_python/allure-report \
             -e AUTH_DB_URL="$AUTH_DB_URL" \
             -e SPEND_DB_URL="$SPEND_DB_URL" \
             -e USERDATA_DB_URL="$USERDATA_DB_URL" \
@@ -76,7 +82,24 @@ jobs:
             -e CURRENCY_SERVICE_HOST="$CURRENCY_SERVICE_HOST" \
             -e CURRENCY_WIREMOCK_HOST="$CURRENCY_WIREMOCK_HOST" \
             qaguru/niffler-py-tests:latest tests
+          
           echo "EXIT_CODE=$?" >> $GITHUB_OUTPUT
+
+      - name: Generate Allure report
+        if: always()
+        run: |
+          npm install -g allure-commandline
+          npx allure generate ./niffler_tests_python/allure-results --clean -o ./niffler_tests_python/allure-report
+
+      - name: Upload Allure artifacts (report + results)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-artifacts
+          path: |
+            niffler_tests_python/allure-results
+            niffler_tests_python/allure-report
+          retention-days: 7
 
       - name: Add comment to PR with test result
         if: always()
