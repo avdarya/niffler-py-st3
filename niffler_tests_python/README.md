@@ -178,17 +178,11 @@ https://qa.guru/python-advanced
 Тесты запускаются автоматически при каждом push или pull request.
 
 ### 🌐 Запуск тестов на отдельно развернутый gRPC-сервер
-1. В отдельном терминале запустить mock-сервис валют (currencymock), используемый для тестирования gRPC-запросов.
-```bash
-    cd niffler-py-st3-avdarya
-```
+1. В отдельном терминале из корневой папки монорепозитория запустить mock-сервис валют (currencymock), используемый для тестирования gRPC-запросов.
 ```bash
     docker compose -f docker-compose.grpcmock.yml up
 ```
-2. Запустить тесты
-```bash
-   cd niffler_tests_python
-```
+2. В другом терминале из папки /niffler_tests_python запустить тесты
 ```bash
    pytest tests/grpc --grpc-mock
 ```
