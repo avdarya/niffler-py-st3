@@ -1,4 +1,0 @@
-# file: /Users/daracydenova/Desktop/AQA-python-advanced/niffler-py-st3-avdarya/niffler_tests_python/clients/user_client.py
-# hypothesis_version: 6.138.2
-
-['/api/users/current', '/api/users/update', '/api/v2/friends/all', '/api/v2/users/all', 'page', 'searchQuery', 'sort', 'username,ASC']

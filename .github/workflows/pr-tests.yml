@@ -1,7 +1,6 @@
 name: pull-request-tests
 
 on:
-  workflow_dispatch:
   pull_request:
     types: [opened, reopened, synchronize]
 
@@ -40,9 +39,8 @@ jobs:
 
       - name: Get the last commit message
         run: |
-          MSG="$(git log -1 --no-merges --pretty=format:%s)"
+          MSG=$(git log -1 --no-merges --pretty=format:%s ${{ github.event.pull_request.head.sha }})
           echo "HEAD_COMMIT_MESSAGE=$MSG" >> $GITHUB_ENV
-          echo "HEAD_COMMIT_MESSAGE=$MSG"
 
       - name: Build docker services and run
         run: |
@@ -57,9 +55,11 @@ jobs:
         run: |
           NET=$(docker network ls --format '{{.Name}}' | grep niffler | head -n1)
           echo "NETWORK_NAME=$NET" >> $GITHUB_ENV
-          echo "Using network: $NET"
+
       - name: Run tests
+        id: tests
         run: |
+          set +e
           docker run --rm --network $NETWORK_NAME \
             -e AUTH_DB_URL="$AUTH_DB_URL" \
             -e SPEND_DB_URL="$SPEND_DB_URL" \
@@ -74,6 +74,7 @@ jobs:
             -e CURRENCY_SERVICE_HOST="$CURRENCY_SERVICE_HOST" \
             -e CURRENCY_WIREMOCK_HOST="$CURRENCY_WIREMOCK_HOST" \
             qaguru/niffler-py-tests:latest tests
+          echo "EXIT_CODE=$?" >> $GITHUB_OUTPUT
 
       - name: Add comment to PR with test result
         if: always()

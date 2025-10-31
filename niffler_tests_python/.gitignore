@@ -28,6 +28,9 @@ MANIFEST
 *.manifest
 *.spec
 
+# Hypothesis cache
+.hypothesis/
+
 # Virtual environments
 .venv/
 venv/

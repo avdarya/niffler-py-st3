@@ -1,4 +1,0 @@
-# file: /Users/daracydenova/Desktop/AQA-python-advanced/niffler-py-st3-avdarya/niffler_tests_python/model/enums/friendship_status.py
-# hypothesis_version: 6.138.2
-
-['ACCEPTED', 'FRIEND', 'INVITE_RECEIVED', 'INVITE_SENT', 'PENDING', 'VOID']

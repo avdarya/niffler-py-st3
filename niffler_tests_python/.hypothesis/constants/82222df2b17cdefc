@@ -1,4 +1,0 @@
-# file: /Users/daracydenova/Desktop/AQA-python-advanced/niffler-py-st3-avdarya/niffler_tests_python/utils/soap_parser.py
-# hypothesis_version: 6.138.2
-
-['.//nif:user', './/nif:usersResponse', './/soap:Fault', 'No SOAP Fault found', 'currency', 'error', 'faultcode', 'faultstring', 'friendship', 'fullname', 'id', 'nif', 'nif:currency', 'nif:friendshipStatus', 'nif:fullname', 'nif:id', 'nif:number', 'nif:size', 'nif:totalElements', 'nif:totalPages', 'nif:username', 'niffler-userdata', 'number', 'size', 'soap', 'totalElements', 'totalPages', 'username', 'users']
