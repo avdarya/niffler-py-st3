@@ -3,7 +3,7 @@ import logging
 
 from confluent_kafka import TopicPartition
 from confluent_kafka.admin import AdminClient
-from confluent_kafka.cimpl import NewTopic, Consumer, Producer
+from confluent_kafka.cimpl import Consumer, Producer
 
 from niffler_tests_python.settings.server_config import ServerConfig
 from niffler_tests_python.utils.waiters import wait_until_timeout
@@ -63,9 +63,6 @@ class KafkaClient:
             value=value,
             headers=[('__TypeId__', b'guru.qa.niffler.model.UserJson')]
         )
-        # b'guru.qa.niffler.model.UserJson'
-        # "guru.qa.niffler.model.UserJson"
-        # headers = [('__TypeId__', b'com.niffler.userdata.dto.UserRegisteredEvent')]
 
         self.producer.flush()
 
@@ -89,7 +86,7 @@ class KafkaClient:
         except Exception as err:
             logging.error("probably no such topic: %s: %s", topic, err)
 
-    def log_msg_and_json(self, topic_partitions):
+    def log_msg_and_json(self, topic_partitions, filter_value: str | None = None):
         msg = self.consume_message(topic_partitions, timeout=25)
         logging.info(msg)
         return msg

@@ -1,9 +1,15 @@
 import time
+import base64
+import json
 from datetime import datetime
 from typing import Callable
-from selenium.webdriver.remote.webelement import WebElement
+
+from playwright.sync_api import Locator
 from niffler_tests_python.clients.category_client import CategoryApiClient
-from niffler_tests_python.model.category import CategoryModel
+from niffler_tests_python.clients.spend_client import SpendApiClient
+from niffler_tests_python.model.rest_model.category import CategoryModel
+from niffler_tests_python.model.db_spend.spend_db import SpendModelDB
+from niffler_tests_python.model.gql_model.stat_gql import StatByCategoryGqlResponse
 from niffler_tests_python.web_pages.MainPage import MainPage
 
 
@@ -79,10 +85,10 @@ def is_text_match_spend_row(
     else:
         return False
 
-def wait_for_spend_row(main_page: MainPage, spend_id: str, timeout=10, interval=0.5) -> WebElement:
+def wait_for_spend_row(main_page: MainPage, spend_id: str, timeout=10, interval=0.5) -> Locator:
     end_time = time.time() + timeout
     while time.time() < end_time:
-        spend_row = main_page.get_spend_row(spend_id)
+        spend_row = main_page.get_spend_row_by_id(spend_id)
         if spend_row is not None:
             return spend_row
         time.sleep(interval)
@@ -107,3 +113,59 @@ def get_category_by_name(category_name: str, category_client: CategoryApiClient)
         if category.name == category_name:
             return category
     raise AssertionError(f"Category with name {category_name} not found")
+
+def decode_jwt_payload(token_payload_part: str) -> dict:
+    try:
+        token_payload_part += '=' * (-len(token_payload_part) % 4)
+        decoded_payload =base64.urlsafe_b64decode(token_payload_part)
+        return json.loads(decoded_payload)
+    except ValueError:
+        raise ValueError('Invalid JWT format')
+
+def calc_total_stat_by_currency(
+        spends: list[SpendModelDB],
+        stat_currency: str,
+        spend_api_client: SpendApiClient
+) -> float:
+    total = 0.0
+    all_currencies = spend_api_client.get_all_currencies()
+    currency_by_rate = {currency.currency: currency.currencyRate for currency in all_currencies}
+    for spend in spends:
+        spend_rate = currency_by_rate.get(spend.currency)
+        stat_rate = currency_by_rate.get(stat_currency)
+
+        if spend_rate is None or stat_rate is None:
+            raise ValueError(f"Missing rate for {spend.currency} or {stat_currency}")
+
+        amount_in_stat_currency = spend.amount * spend_rate / stat_rate
+        total += amount_in_stat_currency
+
+    return total
+
+
+def formated_stat_by_categories (stat_by_category: list[StatByCategoryGqlResponse]) -> dict:
+    sums = 0.0
+    currency = set()
+    category_name = set()
+    first_spend_date = None
+    last_spend_date = None
+    is_contains_archived = False
+    for category in stat_by_category:
+        sums += category.sum
+        currency.add(category.currency)
+        if category.categoryName == 'Archived':
+            is_contains_archived = True
+        else:
+            category_name.add(category.categoryName)
+        if first_spend_date is None or category.firstSpendDate < first_spend_date:
+            first_spend_date = category.firstSpendDate
+        if last_spend_date is None or category.lastSpendDate > last_spend_date:
+            last_spend_date = category.lastSpendDate
+    return {
+        'sum': sums,
+        'currency': list(currency),
+        'category_name': list(category_name),
+        'is_contains_archived': is_contains_archived,
+        'first_spend_date': first_spend_date,
+        'last_spend_date': last_spend_date,
+    }

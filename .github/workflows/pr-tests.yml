@@ -1,0 +1,128 @@
+name: pull-request-tests
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+  workflow_dispatch:
+
+jobs:
+  pr-tests:
+    runs-on: ubuntu-latest
+    env:
+      PROFILE: docker
+      COMPOSE_PROFILES: ""
+      PREFIX: qaguru
+      ARCH: amd64
+      EXECUTION_TYPE: github
+      BUILD_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      AUTH_DB_URL: ${{ secrets.AUTH_DB_URL }}
+      SPEND_DB_URL: ${{ secrets.SPEND_DB_URL }}
+      USERDATA_DB_URL: ${{ secrets.USERDATA_DB_URL }}
+      AUTH_URL: ${{ secrets.AUTH_URL }}
+      GATEWAY_URL: ${{ secrets.GATEWAY_URL }}
+      FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
+      HEADED: ${{ vars.HEADED }}
+      GRAPHQL_URL: ${{ secrets.GRAPHQL_URL }}
+      KAFKA_ADDRESS: ${{ secrets.KAFKA_ADDRESS }}
+      SOAP_URL: ${{ secrets.SOAP_URL }}
+      CURRENCY_SERVICE_HOST: ${{ secrets.CURRENCY_SERVICE_HOST }}
+      CURRENCY_WIREMOCK_HOST: ${{ secrets.CURRENCY_WIREMOCK_HOST }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Get the last commit message
+        run: |
+          MSG=$(git log -1 --no-merges --pretty=format:%s ${{ github.event.pull_request.head.sha }})
+          echo "HEAD_COMMIT_MESSAGE=$MSG" >> $GITHUB_ENV
+
+      - name: Build docker services and run
+        run: |
+          bash docker-compose-dev.sh
+          docker compose logs
+          docker ps -a
+
+      - name: Build container with tests
+        run: docker build -t qaguru/niffler-py-tests:latest -f ./niffler_tests_python/Dockerfile .
+
+      - name: Get compose network name
+        run: |
+          NET=$(docker network ls --format '{{.Name}}' | grep niffler | head -n1)
+          echo "NETWORK_NAME=$NET" >> $GITHUB_ENV
+
+      - name: Run tests
+        id: tests
+        run: |
+          set +e
+          mkdir -p niffler_tests_python/allure-results
+          mkdir -p niffler_tests_python/allure-report
+          
+          docker run --rm --network $NETWORK_NAME \
+            -v ${{ github.workspace }}/niffler_tests_python/allure-results:/niffler_tests_python/allure-results \
+            -v ${{ github.workspace }}/niffler_tests_python/allure-report:/niffler_tests_python/allure-report \
+            -e AUTH_DB_URL="$AUTH_DB_URL" \
+            -e SPEND_DB_URL="$SPEND_DB_URL" \
+            -e USERDATA_DB_URL="$USERDATA_DB_URL" \
+            -e AUTH_URL="$AUTH_URL" \
+            -e GATEWAY_URL="$GATEWAY_URL" \
+            -e FRONTEND_URL="$FRONTEND_URL" \
+            -e HEADED="$HEADED" \
+            -e GRAPHQL_URL="$GRAPHQL_URL" \
+            -e KAFKA_ADDRESS="$KAFKA_ADDRESS" \
+            -e SOAP_URL="$SOAP_URL" \
+            -e CURRENCY_SERVICE_HOST="$CURRENCY_SERVICE_HOST" \
+            -e CURRENCY_WIREMOCK_HOST="$CURRENCY_WIREMOCK_HOST" \
+            qaguru/niffler-py-tests:latest tests
+          
+          echo "EXIT_CODE=$?" >> $GITHUB_OUTPUT
+
+      - name: Generate Allure report
+        if: always()
+        run: |
+          npm install -g allure-commandline
+          npx allure generate ./niffler_tests_python/allure-results --clean -o ./niffler_tests_python/allure-report
+
+      - name: Upload Allure artifacts (report + results)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-artifacts
+          path: |
+            niffler_tests_python/allure-results
+            niffler_tests_python/allure-report
+          retention-days: 7
+
+      - name: Add comment to PR with test result
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const commitMsg = process.env.HEAD_COMMIT_MESSAGE;
+            const buildUrl = process.env.BUILD_URL;
+            const exitCode = "${{ steps.tests.outputs.EXIT_CODE }}";
+            const statusEmoji = exitCode === "0" ? "✅" : "🔴";
+            const message = `${statusEmoji} TEST RUN ${exitCode === "0" ? "PASSED" : "FAILED"} ${statusEmoji}\n\n` +
+                            `🔗 [View Workflow Run](${buildUrl})\n\n` +
+                            `📝 Last commit: ${commitMsg}`;
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: message
+            });
+
+      - name: Cleanup containers
+        if: always()
+        run: docker compose down -v
+
+
+

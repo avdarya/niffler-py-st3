@@ -4,28 +4,32 @@ from datetime import datetime
 from dateutil.tz import tz
 from niffler_tests_python.clients.spend_client import SpendApiClient
 from niffler_tests_python.databases.spend_db import SpendDB
-from niffler_tests_python.model.spend import SpendModelAdd, SpendModel
+from niffler_tests_python.model.enums.currency_title import CurrencyTitle
+from niffler_tests_python.model.rest_model.spend import SpendModelAdd, SpendModel
 from niffler_tests_python.utils.marks import Pages, TestData
 from niffler_tests_python.utils.helpers import wait_for_spend_row, is_text_match_spend_row
 from niffler_tests_python.web_pages.MainPage import MainPage
 from niffler_tests_python.web_pages.SpendingPage import SpendingPage
 
 
-@allure.epic('Spending management')
-@allure.feature('Spending updating')
-@allure.story('Edit spend')
+@allure.epic("Траты")
+@allure.feature("Редактирование траты")
+@allure.story("UI")
+@allure.tag("positive")
+@allure.title("Редактирование траты — обновление записи в БД и на странице /main")
 @Pages.go_to_main_page_after_spend
 @TestData.spend(SpendModelAdd(
     amount=203.01,
     description="test edit spend",
-    currency="USD",
-    spendDate="2025-06-26T21:00:00.000+00:00",
+    currency=CurrencyTitle.USD.value,
+    spendDate="2025-06-26",
     category={"name": "edit spend"}
 ))
-@pytest.mark.parametrize("amount, currency, new_category, spend_date, description", [
-    ("456", "EUR", "after edit spend", "02/09/2025", "spending for update")
+@pytest.mark.parametrize("amount, currency, new_category, description", [
+    ("456", CurrencyTitle.EUR.value, "after edit spend", "spending for update")
 ])
-def test_edit_spend(
+def test_edit_spending(
+        user: tuple[str, str],
         main_page: MainPage,
         spending_page: SpendingPage,
         spend: SpendModel,
@@ -34,80 +38,79 @@ def test_edit_spend(
         amount: str,
         currency: str,
         new_category: str,
-        spend_date: str,
         description: str,
 ):
-    with allure.step('Open spend for editing'):
-        added_spend_row = main_page.get_spend_row(spend_id=spend.id)
-        main_page.click_edit_spend(added_spend_row)
+    spend_date = spend.spendDate.date()
 
-    with allure.step('Enter amount'):
-        spending_page.clear_amount_input()
-        spending_page.enter_amount_input(amount=amount)
+    with allure.step('Открываем трату для редактирования'):
+        spend_row = wait_for_spend_row(main_page, spend.id)
+        main_page.click_edit_spend(spend_row)
 
-    with allure.step('Enter currency'):
-        spending_page.click_currency_input()
-        spending_page.click_currency_value(currency_value=currency)
+    spending_page.expected_spend_url(spend.id)
 
-    with allure.step('Enter category'):
+    with allure.step('Вводим сумму траты'):
+        spending_page.clear_amount()
+        spending_page.fill_amount(amount)
+
+    with allure.step('Выбираем валюту'):
+        spending_page.click_currency()
+        spending_page.select_currency(currency)
+
+    with allure.step('Изменяем категорию'):
         spending_page.clear_category_input()
-        spending_page.enter_category_input(category_name=new_category)
+        spending_page.fill_category(new_category)
 
-    with allure.step('Enter date'):
-        spending_page.enter_date_input(spend_date=spend_date)
-
-    with allure.step('Enter description'):
+    with allure.step('Изменяем описание'):
         spending_page.clear_description_input()
-        spending_page.enter_description_input(description=description)
+        spending_page.fill_description(description)
 
-    with allure.step('Click save button'):
-        spending_page.click_save_spend()
+    with allure.step('Нажимаем кнопку «Сохранить»'):
+        spending_page.submit_form()
 
-    with allure.step('Save alert dialog'):
-        alert_on_updated = main_page.alert_on_action()
+    main_page.expected_url()
 
-    with allure.step('Save edited spend row from UI'):
+    with allure.step('Проверяем уведомление об успешном редактировании'):
+        assert main_page.notification.get_notification_text() == "Spending is edited successfully"
+        main_page.notification.is_success_notification()
+
+    with allure.step('Сохраняем изменённую трату из UI'):
         edited_spend_row = wait_for_spend_row(main_page=main_page, spend_id=spend.id)
 
-    with allure.step('Retrieve edited spend from API'):
+    with allure.step('Получаем изменённую трату через API'):
         api_spend = spend_client.get_spend_by_id(spend.id)
-        local_dt = api_spend.spendDate.astimezone(tz.tzlocal())
-        date_str = local_dt.strftime("%m/%d/%Y")
 
-    with allure.step('Retrieve edited spend in DB'):
+    with allure.step('Получаем изменённую трату из БД'):
         db_spend = spend_db.get_spend(spend_id=spend.id)
-        db_category = spend_db.get_category_by_name(name=new_category)
+        db_category = spend_db.get_user_category_by_name(username=user[0], name=new_category)
 
-    with allure.step('Assert edit spend'):
-        with allure.step('Verify alert text'):
-            assert "Spending is edited successfully" in alert_on_updated
-        with allure.step('Verify edited spend row data in UI'):
+    with allure.step('Проверяем корректность редактирования траты'):
+        with allure.step('Проверяем изменённые данные траты в UI'):
             assert is_text_match_spend_row(
-                spend_row_text=edited_spend_row.text,
+                spend_row_text=edited_spend_row.inner_text(),
                 category_name=new_category,
                 amount=amount,
                 currency=currency,
                 description=description,
-                spend_date=spend_date
+                spend_date=spend_date.strftime("%m/%d/%Y")
             )
-        with allure.step('Verify edited spend date in API'):
-            assert date_str == spend_date
-        with allure.step('Verify edited spend category in API'):
+        with allure.step('Проверяем дату траты в API'):
+            assert api_spend.spendDate.date() == spend_date
+        with allure.step('Проверяем изменённую категорию траты в API'):
             assert api_spend.category.name == new_category
-        with allure.step('Verify edited spend currency in API'):
+        with allure.step('Проверяем изменённую валюту траты в API'):
             assert api_spend.currency == currency
-        with allure.step('Verify edited spend amount in API'):
+        with allure.step('Проверяем изменённую сумму траты в API'):
             assert api_spend.amount == float(amount)
-        with allure.step('Verify edited spend description in API'):
+        with allure.step('Проверяем изменённое описание траты в API'):
             assert api_spend.description == description
 
-        with allure.step('Verify edited spend amount in DB'):
+        with allure.step('Проверяем изменённую сумму траты в БД'):
             assert db_spend.amount == float(amount)
-        with allure.step('Verify edited spend currency in DB'):
+        with allure.step('Проверяем изменённую валюту траты в БД'):
             assert db_spend.currency == currency
-        with allure.step('Verify edited spend date in DB'):
-            assert db_spend.spend_date == datetime.strptime(spend_date, "%m/%d/%Y").date()
-        with allure.step('Verify edited spend description in DB'):
+        with allure.step('Проверяем дату траты в БД'):
+            assert db_spend.spend_date == spend_date
+        with allure.step('Проверяем изменённое описание траты в БД'):
             assert db_spend.description == description
-        with allure.step('Verify edited spend category in DB'):
+        with allure.step('Проверяем изменённую категорию траты в БД'):
             assert db_category.name == new_category

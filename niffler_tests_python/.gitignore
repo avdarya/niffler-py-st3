@@ -28,6 +28,9 @@ MANIFEST
 *.manifest
 *.spec
 
+# Hypothesis cache
+.hypothesis/
+
 # Virtual environments
 .venv/
 venv/
@@ -36,6 +39,7 @@ env/
 env.bak/
 venv.bak/
 .env
+docker.env
 
 
 # Jupyter Notebook

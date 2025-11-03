@@ -1,10 +1,10 @@
 from unittest.mock import Mock
 
 import pytest
+import allure
 
 from niffler_tests_python.clients.category_client import CategoryApiClient
-from niffler_tests_python.clients.spend_client import SpendApiClient
-from niffler_tests_python.model.category import CategoryModel
+from niffler_tests_python.model.rest_model.category import CategoryModel
 
 
 @pytest.fixture
@@ -12,15 +12,24 @@ def client():
     client = CategoryApiClient(Mock())
     return client
 
+@allure.epic("Категории")
+@allure.feature("Получение списка категорий")
+@allure.story("Unit")
+@allure.tag("positive")
+@allure.title("Проверка корректного парсинга категории в клиенте CategoryApiClient")
 def test_category(client):
-    response = Mock()
-    response.json.return_value = [{
-            'id': '1',
-            'name': 'Category1',
-            'username': 'user1',
-            'archived': False,
-    }]
-    client.session.get.return_value = response
-    categories = client.get_all_categories()
-    assert len(categories) == 1
-    assert categories == [CategoryModel(id='1', name='Category1', username='user1', archived=False)]
+    with allure.step('Создаём мок-ответ API с одной категорией'):
+        response = Mock()
+        response.json.return_value = [{
+                'id': '1',
+                'name': 'Category1',
+                'username': 'user1',
+                'archived': False,
+        }]
+        client.session.get.return_value = response
+    with allure.step('Вызываем метод get_all_categories() клиента'):
+        categories = client.get_all_categories()
+    with allure.step('Проверяем, что длина списка категорий равна 1'):
+        assert len(categories) == 1
+    with allure.step('Проверяем корректность данных категории'):
+        assert categories == [CategoryModel(id='1', name='Category1', username='user1', archived=False)]

@@ -1,0 +1,21 @@
+query Stat(
+    $statCurrency: CurrencyValues,
+    $filterCurrency: CurrencyValues,
+    $filterPeriod: FilterPeriod
+) {
+    stat (
+        statCurrency: $statCurrency
+        filterCurrency: $filterCurrency
+        filterPeriod: $filterPeriod
+    ) {
+        total
+        currency
+        statByCategories {
+            categoryName
+            currency
+            sum
+            firstSpendDate
+            lastSpendDate
+        }
+    }
+}

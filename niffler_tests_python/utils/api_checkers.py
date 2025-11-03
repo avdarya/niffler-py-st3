@@ -1,6 +1,7 @@
 import time
+from datetime import datetime
 from niffler_tests_python.clients.spend_client import SpendApiClient
-from niffler_tests_python.model.spend import SpendModel
+from niffler_tests_python.model.rest_model.spend import SpendModel
 
 
 def assert_spend_record_exists(
@@ -14,14 +15,17 @@ def assert_spend_record_exists(
         timeout: float = 5,
         interval: float = 0.5
 ) -> SpendModel:
+    expected_date = datetime.strptime(spend_date, "%m/%d/%Y").date()
     end_time = time.time() + timeout
     while time.time() < end_time:
         for spend_record in api_response:
+            print(f'spend_record.spendDate.date()={spend_record.spendDate.date()}')
+            print(f'expected_date={expected_date}')
             if (
                 spend_record.currency == currency and
                 spend_record.amount == float(amount) and
                 spend_record.description == description and
-                # spend_record.spendDate.startswith(spend_date) and
+                spend_record.spendDate.date() == expected_date and
                 spend_record.category.name == category_name
             ):
                 return spend_record

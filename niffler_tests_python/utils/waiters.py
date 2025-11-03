@@ -8,7 +8,7 @@ import allure
 @allure.step
 def wait_until_timeout(function):
     def wrapper(*args, **kwargs):
-        default_timeout = 12
+        default_timeout = 3
         timeout = kwargs.pop("timeout", default_timeout)
         polling_interval = kwargs.pop("polling_interval", 0.1)
         err = kwargs.pop("err", None)
@@ -17,8 +17,14 @@ def wait_until_timeout(function):
         logging.debug(f'{start_time} start waiting')
         while datetime.datetime.now().timestamp() < start_time + timeout + 0.1:
             result = function(*args, **kwargs)
+
+            if result == [] and err is None:
+                logging.debug("Result is empty list, no error expected — exit early.")
+                break
+
             if result is not None and result != [] and result != '':
                 break
+
             time.sleep(polling_interval)
         if err and result is None:
             raise TimeoutError(

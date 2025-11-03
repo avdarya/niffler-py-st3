@@ -1,7 +1,7 @@
 import pytest
 from _pytest.mark import MarkDecorator
 
-from niffler_tests_python.model.spend import SpendModelAdd
+from niffler_tests_python.model.rest_model.spend import SpendModelAdd
 
 
 class Pages:
@@ -10,11 +10,16 @@ class Pages:
     go_to_main_page_after_fill_spends = pytest.mark.usefixtures("go_to_main_page_after_fill_spends")
     go_to_profile_page = pytest.mark.usefixtures("go_to_profile_page")
     go_to_profile_after_category = pytest.mark.usefixtures("go_to_profile_after_category")
-
+    go_to_people_all_after_people = pytest.mark.usefixtures("go_to_people_all_after_people")
+    go_to_people_friends_after_send = pytest.mark.usefixtures("go_to_people_friends_after_send")
+    go_to_people_friends_after_accept = pytest.mark.usefixtures("go_to_people_friends_after_accept")
+    go_to_people_all_after_list_people = pytest.mark.usefixtures("go_to_people_all_after_list_people")
+    go_to_people_friends_after_list_friend = pytest.mark.usefixtures("go_to_people_friends_after_list_friend")
 
 class TestData:
     fill_spends = pytest.mark.usefixtures("fill_spends")
     fill_categories = pytest.mark.usefixtures("fill_categories")
+    filled_spends_contains_archived_category = pytest.mark.usefixtures("filled_spends_contains_archived_category")
 
     @staticmethod
     def category(x: str) -> MarkDecorator:
@@ -50,3 +55,11 @@ class TestData:
         indirect=True,
         ids=lambda param: param.description
     )
+
+    @staticmethod
+    def people_list(x: int) -> MarkDecorator:
+        return pytest.mark.parametrize("people_list", [x], indirect=True)
+
+    @staticmethod
+    def friend_list(x: int) -> MarkDecorator:
+        return pytest.mark.parametrize("friend_list", [x], indirect=True)
